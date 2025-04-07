@@ -20,7 +20,7 @@ def cst(xy, properties, ue=None):
                       [1, xy[2][0], xy[2][1]]])
         return 0.5 * np.abs(np.linalg.det(A))
 
-    chi = mobilus_coordinates(xy, [0, 0])
+    chi = mobilus_coordinates(xy, [0.5, 0.5]) #coordenadas triangulares para ese punto (0,5 ; 0,5)
     area = element_area(xy)
 
     B = np.array([
