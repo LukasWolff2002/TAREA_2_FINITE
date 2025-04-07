@@ -29,27 +29,26 @@ def cst(xy, properties, ue=None):
         [chi[0], chi[0],  chi[1], chi[1],  chi[2], chi[2]]
     ])
 
-    D = np.array([
+    E = np.array([
         [E_mod, 0,     0    ],
         [0,     E_mod, 0    ],
         [0,     0,     E_mod]
     ])
 
-    ke = (B.T @ D @ B) * area * t
+    ke = (B.T @ E @ B) * area * t
 
     if ue is not None:
         ue = np.array(ue).flatten()
-        if len(ue) == 2:
-            ue = np.tile(ue, 3)  # Expand to 6 components if only 2 are given
+        ue = np.tile(ue, 3)  # Expand to 6 components if only 2 are given
         fe = (area * t / 3) * ue.reshape((6, 1))
+
+        epsilon = B @ ue
+  
+        sigma = E @ epsilon
     else:
         fe = None
 
     return ke, fe
-
-
-
-
 
 
 
