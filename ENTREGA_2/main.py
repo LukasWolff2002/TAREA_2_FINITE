@@ -30,20 +30,21 @@ for node in structure_1.nodes:
 # Crear la estructura
 estructura = Solve(structure_1.nodes, structure_1.elements)
 
-for dof in dof_y:
-    estructura.apply_force(dof_index=dof, value=-20000)  # carga vertical hacia abajo
- 
+# Carga por peso propio
+rho = 7850e-9  # N/mm³
+g = 9.81       # m/s²
+f_body = np.array([0, -rho * g])
+
+# Aplicar a todos los elementos
+for elem in estructura.elements:
+    f_eq = elem.body_forces(f_body)
+    dofs = elem.calculate_indices()
+
+    for i, dof in enumerate(dofs):
+        estructura.f_global[dof] += f_eq[i]
+
+
+# Resolver
 desplazamientos = estructura.solve()
-
-nodo_des = structure_1.nodes[-1]
-
-ux_dof = nodo_des.dofs[0]  # índice del DOF en x
-uy_dof = nodo_des.dofs[1]  # índice del DOF en y
-
-ux = estructura.u_global[ux_dof, 0]
-uy = estructura.u_global[uy_dof, 0]
-
-print(f"Desplazamiento del nodo {nodo_des.id}: ux = {ux:.6e} mm, uy = {uy:.6e} mm")
-
-plot_full_structure(structure_1.nodes, structure_1.elements, u_global=estructura.u_global, deform_scale=0.1)
+plot_full_structure(structure_1.nodes, structure_1.elements, u_global=estructura.u_global, deform_scale=1000)
 

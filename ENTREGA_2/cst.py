@@ -46,11 +46,21 @@ class CST:
         t = self.section.thickness
         return t * self.area * self.B.T @ D @ self.B
     
+    def body_forces(self, body_force_vector):
+      
+        t = self.section.thickness
+        A = self.area
+        bx, by = body_force_vector
+
+        # Vector de fuerza equivalente por carga distribuida constante
+        f_body = (t * A / 3) * np.array([bx, by, bx, by, bx, by])
+
+        return f_body
+
+    
     # Añadimos función para calcular e imprimir las fuerzas de cuerpo
     def apply_point_body_force(self, x, y, force_vector):
-        """
-        Aplica una fuerza puntual dentro del elemento y almacena su ubicación y dirección.
-        """
+      
         N = self.get_interpolation_matrix(x, y)
         fx, fy = force_vector
         f_puntual = (N.T @ np.array([fx, fy])).flatten()
