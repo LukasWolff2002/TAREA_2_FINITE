@@ -1,7 +1,7 @@
 import numpy as np
 
 class Node:
-    def __init__(self, id, x, y, dofs, restrain=['f', 'f']):
+    def __init__(self, id, x, y, dofs, restrain=[0, 0]):
         self.id = id
         self.x = x
         self.y = y
