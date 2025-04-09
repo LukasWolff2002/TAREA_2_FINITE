@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from section import Section
 from cst import CST
 from solve import Solve
-from graph import plot_deformed_structure, plot_nodes, plot_sections
+from graph import plot_full_structure
 from assembly import Structure
 # ------------------------
 
@@ -19,11 +19,6 @@ delta_y = 10 #mm
 structure_1 = Structure(b, h, L, delta_x, delta_y)
 
 
-#Plotear los nodos
-plot_nodes(structure_1.nodes)
-
-#Plotear los elementos
-plot_sections(structure_1.elements)
 
     
 
@@ -40,9 +35,5 @@ estructura.apply_force(dof_index=ux_dof, value=100000)   # carga horizontal
 #estructura.apply_force(dof_index=uy_dof, value=-2000)  # carga vertical hacia abajo
 desplazamientos = estructura.solve()
 
-
-plot_deformed_structure(structure_1.nodes, structure_1.elements, estructura.u_global, scale=1)
-
-
-
+plot_full_structure(structure_1.nodes, structure_1.elements, u_global=estructura.u_global)
 
