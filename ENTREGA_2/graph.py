@@ -20,7 +20,7 @@ def plot_full_structure(nodes, elements, u_global=None, deform_scale=0.001, alph
     ax = axs[0]
     for node in nodes:
         ax.plot(node.x, node.y, 'bo')
-        ax.text(node.x + 1, node.y + 1, str(node.id), fontsize=9, color='red')
+        #ax.text(node.x + 1, node.y + 1, str(node.id), fontsize=9, color='red')
     ax.set_title('Distribución de Nodos')
     ax.set_xlabel('X [mm]')
     ax.set_ylabel('Y [mm]')
@@ -37,10 +37,10 @@ def plot_full_structure(nodes, elements, u_global=None, deform_scale=0.001, alph
         coords_closed = np.vstack([coords, coords[0]])
         ax.plot(coords_closed[:, 0], coords_closed[:, 1], 'k-', linewidth=0.5)
         centroid = elem.get_centroid()
-        ax.text(centroid[0], centroid[1], f'E{elem.element_tag}', fontsize=8, color='red')
+        #ax.text(centroid[0], centroid[1], f'E{elem.element_tag}', fontsize=8, color='red')
         for node in elem.node_list:
             ax.plot(node.x, node.y, 'bo')
-            ax.text(node.x + 0.5, node.y + 0.5, f'N{node.id}', fontsize=7, color='blue')
+            #ax.text(node.x + 0.5, node.y + 0.5, f'N{node.id}', fontsize=7, color='blue')
     ax.set_title('Elementos CST con color')
     ax.set_xlabel('X [mm]')
     ax.set_ylabel('Y [mm]')
