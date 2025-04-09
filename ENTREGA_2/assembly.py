@@ -10,10 +10,9 @@ from cst import CST
 
 
 
-E = 210000  # módulo de elasticidad en MPa
 
 class Structure:
-    def __init__(self, b, h, L, delta_x, delta_y):
+    def __init__(self, b, h, L, delta_x, delta_y, E=210000):
         self.b = b
         self.h = h
         self.L = L
