@@ -2,12 +2,16 @@ import time
 from assembly import Structure
 from solve import Solve
 
-def encontrar_convergencia_deformacion(b, h, L, delta_inicial=100, tolerancia=1.0e-10, carga=-20000, max_iter=6):
+def encontrar_convergencia_deformacion(b, h, L, delta_inicial=100, tolerancia=1.0e-10, carga=-20000, max_iter=4):
     resultados = []
     delta_x = delta_y = delta_inicial
     uy_anterior = None
 
     for iteracion in range(max_iter):
+
+        if iteracion + 1 == max_iter:
+            print("⚠️ Máximo número de iteraciones alcanzado.")
+            break
         print(f"\n--- Iteración {iteracion + 1} | delta = {delta_x:.2f} mm ---")
         inicio = time.time()
 
