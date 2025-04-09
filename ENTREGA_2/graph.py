@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_full_structure(nodes, elements, u_global=None, deform_scale=0.001, alpha=0.3):
+def plot_full_structure(nodes, elements, u_global=None, deform_scale=0.001, alpha=0.3, dy = 3):
     """
     Combina 3 gráficos: nodos, elementos CST y estructura deformada.
     
@@ -14,7 +14,7 @@ def plot_full_structure(nodes, elements, u_global=None, deform_scale=0.001, alph
     - deform_scale: escala para la deformación
     - alpha: transparencia para los elementos
     """
-    fig, axs = plt.subplots(1, 3, figsize=(18, 3))
+    fig, axs = plt.subplots(1, 3, figsize=(18, dy))
 
     # --- Subplot 1: Nodos ---
     ax = axs[0]
