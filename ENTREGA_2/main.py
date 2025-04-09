@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from section import Section
 from cst import CST
-from solve import ensamblar_y_resolver
+
 
 b = 30 #mm
 h = 30 #mm
@@ -17,8 +17,6 @@ nodos_y = int(h/delta_y) + 1
 nodos_x = int(L/delta_x) + 1
 
 section = Section(thickness=1, E=np.array([[4,1,0], [1,4,0],[0,0,2]]), nu=0.3)
-
-print(f"Total de nodos en x: {nodos_x}, Total de nodos en y: {nodos_y}")
 
 def plot_nodes(nodes):
     plt.figure(figsize=(8, 4))
