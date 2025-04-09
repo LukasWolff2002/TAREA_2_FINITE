@@ -1,87 +1,34 @@
+from nodes import Node
+from cst import CST
+from section import Section
 import numpy as np
-import matplotlib.pyplot as plt
+from solve import ensamblar_y_resolver
 
-def cst(xy, properties, ue=None):
-    E_mod = properties['E']
-    rho = properties['rho']
-    t = 1  # Thickness of the element (assumed constant for simplicity)
+# ------------------------
+# Caso de estudio (1 elemento)
+# ------------------------
 
-    def mobilus_coordinates(xy, point):
-        A = np.array([point[0], point[1], 1])
-        B = np.array([[xy[0][0], xy[1][0], xy[2][0]],
-                      [xy[0][1], xy[1][1], xy[2][1]],
-                      [1, 1, 1]])
-        x = np.linalg.solve(B, A)
-        return x
+# Nodos
+node1 = Node(1, 0.0, 0.0, [0, 1], restrain=['r', 'r'])
+node2 = Node(2, 3.0, 1.0, [2, 3], restrain=['f', 'f'])
+node3 = Node(3, 2.0, 2.0, [4, 5], restrain=['f', 'f'])
+nodes = [node1, node2, node3]
 
-    def element_area(xy):
-        A = np.array([[1, xy[0][0], xy[0][1]],
-                      [1, xy[1][0], xy[1][1]],
-                      [1, xy[2][0], xy[2][1]]])
-        return 0.5 * np.abs(np.linalg.det(A))
+# Sección
+E = 8*np.array([[4,1,0], [1,4,0],[0,0,2]])
+section = Section(thickness=1, E=E, nu=0.3)
 
-    chi = mobilus_coordinates(xy, [0.5, 0.5]) #coordenadas triangulares para ese punto (0,5 ; 0,5)
-    area = element_area(xy)
+# Elemento CST
+element = CST(1, [node1, node2, node3], section)
 
-    B = np.array([
-        [chi[0], 0,       chi[1], 0,       chi[2], 0      ],
-        [0,       chi[0], 0,       chi[1], 0,       chi[2]],
-        [chi[0], chi[0],  chi[1], chi[1],  chi[2], chi[2]]
-    ])
+# Imprimir resumen
+element.printSummary()
+element.body_forces([0, -1000])
+element.plotGeometry()
+# Aplicar carga puntual en nodo
+F_nodal = element.get_point_load_forces(node3.x, node3.y, [0, -1000])
 
-    E = np.array([
-        [E_mod, 0,     0    ],
-        [0,     E_mod, 0    ],
-        [0,     0,     E_mod]
-    ])
+# Resolver sistema
+u, f, K = ensamblar_y_resolver(element, F_nodal, nodes)
 
-    ke = (B.T @ E @ B) * area * t
-
-    if ue is not None:
-        ue = np.array(ue).flatten()
-        ue = np.tile(ue, 3)  # Expand to 6 components if only 2 are given
-        fe = (area * t / 3) * ue.reshape((6, 1))
-
-        epsilon = B @ ue
-  
-        sigma = E @ epsilon
-    else:
-        fe = None
-
-    return ke, fe
-
-
-
-
-
-
-def plot_element(xy, title="Triangular Element"):
-    xy = np.array(xy + [xy[0]])  # Cierra el triángulo
-    plt.figure(figsize=(5,5))
-    plt.plot(xy[:,0], xy[:,1], 'bo-')
-    for i, (x, y) in enumerate(xy[:-1]):
-        plt.text(x, y, f'N{i+1}', fontsize=12, ha='right')
-    plt.title(title)
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.axis('equal')
-    plt.grid(True)
-    plt.show()
-
-# Example usage
-if __name__ == "__main__":
-    properties = {
-        'E': 210e9,
-        'rho': 7850
-    }
-
-    xy = [[0, 0], [1, 0], [1, 1]]
-    ue = [1, 0]  # Optional: displacement
-
-    ke, fe = cst(xy, properties, ue)
-
-    print("Stiffness matrix ke:\n", ke)
-    if fe is not None:
-        print("Equivalent nodal force vector fe:\n", fe)
-
-    plot_element(xy)
+u.flatten(), f.flatten(), K

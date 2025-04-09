@@ -1,52 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# ------------------------
-# Clases auxiliares
-# ------------------------
-
-class Node:
-    def __init__(self, id, x, y, dofs, restrain=None):
-        self.id = id
-        self.x = x
-        self.y = y
-        self.dofs = np.array(dofs)
-        self.restrain = np.array(restrain if restrain else ['f', 'f'])
-
-class Section:
-    def __init__(self, thickness, E, nu, type='planeStress'):
-        self.thickness = thickness
-        self.E = E
-        self.nu = nu
-        self.type = type
-        self.D = self._compute_D()
-
-    def _compute_D(self):
-        E, nu = self.E, self.nu
-        
-        if isinstance(E, np.ndarray):
-            return E
-        
-        if self.type == 'planeStress':
-            return (E / (1 - nu**2)) * np.array([
-                [1, nu, 0],
-                [nu, 1, 0],
-                [0, 0, (1 - nu) / 2]
-            ])
-        elif self.type == 'planeStrain':
-            coef = E / ((1 + nu)*(1 - 2*nu))
-            return coef * np.array([
-                [1 - nu, nu, 0],
-                [nu, 1 - nu, 0],
-                [0, 0, (1 - 2*nu) / 2]
-            ])
-        else:
-            raise ValueError(f"Invalid type: {self.type}")
-
-# ------------------------
-# Clase CST
-# ------------------------
-
 class CST:
     def __init__(self, element_tag, node_list, section, body_force=None):
         self.element_tag = element_tag
@@ -158,56 +112,3 @@ class CST:
         plt.title(f'CST Element {self.element_tag}')
         plt.grid(True)
         plt.show()
-
-# ------------------------
-# Ensamblaje y resolución
-# ------------------------
-
-def ensamblar_y_resolver(elem, fuerza, nodos):
-    total_dofs = 6
-    K = np.zeros((total_dofs, total_dofs))
-    f = np.zeros((total_dofs, 1))
-
-    idx = elem.calculate_indices()
-    K[np.ix_(idx, idx)] += elem.Ke
-    f[idx] += fuerza.reshape(-1, 1)
-
-    restrain_map = np.concatenate([n.restrain for n in nodos])
-    libres = np.where(restrain_map == 'f')[0]
-
-    Kff = K[np.ix_(libres, libres)]
-    ff = f[libres]
-
-    uf = np.linalg.solve(Kff, ff)
-    u = np.zeros((total_dofs, 1))
-    u[libres] = uf
-    return u, f, K
-
-# ------------------------
-# Caso de estudio (1 elemento)
-# ------------------------
-
-# Nodos
-node1 = Node(1, 0.0, 0.0, [0, 1], restrain=['r', 'r'])
-node2 = Node(2, 3.0, 1.0, [2, 3], restrain=['f', 'f'])
-node3 = Node(3, 2.0, 2.0, [4, 5], restrain=['f', 'f'])
-nodes = [node1, node2, node3]
-
-# Sección
-E = 8*np.array([[4,1,0], [1,4,0],[0,0,2]])
-section = Section(thickness=1, E=E, nu=0.3)
-
-# Elemento CST
-element = CST(1, [node1, node2, node3], section)
-
-# Imprimir resumen
-element.printSummary()
-element.body_forces([0, -1000])
-element.plotGeometry()
-# Aplicar carga puntual en nodo
-F_nodal = element.get_point_load_forces(node3.x, node3.y, [0, -1000])
-
-# Resolver sistema
-u, f, K = ensamblar_y_resolver(element, F_nodal, nodes)
-
-u.flatten(), f.flatten(), K
