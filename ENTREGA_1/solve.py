@@ -1,5 +1,5 @@
 import numpy as np
-
+#ACA DEBE IR LA MATRIZ GLOBAL
 def ensamblar_y_resolver(elem, fuerza, nodos):
     total_dofs = 6
     K = np.zeros((total_dofs, total_dofs))

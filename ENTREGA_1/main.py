@@ -2,7 +2,7 @@ from nodes import Node
 from cst import CST
 from section import Section
 import numpy as np
-from solve import ensamblar_y_resolver
+#from solve import ensamblar_y_resolver
 
 # ------------------------
 # Caso de estudio (1 elemento)
@@ -23,12 +23,20 @@ element = CST(1, [node1, node2, node3], section)
 
 # Imprimir resumen
 element.printSummary()
-element.body_forces([0, -1000])
-element.plotGeometry()
-# Aplicar carga puntual en nodo
-F_nodal = element.get_point_load_forces(node3.x, node3.y, [0, -1000])
+# Aplicar una fuerza puntual como carga interna en punto (2.0, 1.5) cualquiera 
+F_interna = element.apply_point_body_force(2.0, 1.5, [0, -1000])
 
-# Resolver sistema
-u, f, K = ensamblar_y_resolver(element, F_nodal, nodes)
+# Resolver con esta fuerza
+u, f, K = element.ensamblar_y_resolver(F_interna, nodes)
 
 u.flatten(), f.flatten(), K
+
+# Mostrar desplazamientos por nodo
+print("\nDesplazamientos por nodo:")
+for node in nodes:
+    ux = u[node.dofs[0]][0]
+    uy = u[node.dofs[1]][0]
+    print(f"Nodo {node.id}: ux = {ux:.4e} m, uy = {uy:.4e} m")
+
+
+element.plotGeometry()
