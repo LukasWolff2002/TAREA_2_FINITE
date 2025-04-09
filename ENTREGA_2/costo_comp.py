@@ -1,5 +1,6 @@
 import time
 from assembly import Structure
+from solve import Solve
 
 def encontrar_convergencia_deformacion(b, h, L, delta_inicial=100, tolerancia=1.0e-10, carga=-20000, max_iter=6):
     resultados = []
