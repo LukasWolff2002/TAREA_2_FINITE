@@ -6,4 +6,4 @@ class Node:
         self.x = x
         self.y = y
         self.dofs = np.array(dofs)
-        self.restrain = np.array(restrain if restrain else ['f', 'f'])
+        self.restrain = np.array(restrain)
