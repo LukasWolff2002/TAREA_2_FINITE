@@ -1,111 +1,213 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def cst(xy, properties, ue=None):
-    # Extraer las propiedades del material
-    E = properties["E"]  # Módulo de elasticidad
-    rho = properties["rho"]  # Densidad del material
-    
-    # Coordenadas de los nodos del triángulo
-    x1, y1 = xy[0]
-    x2, y2 = xy[1]
-    x3, y3 = xy[2]
+# ------------------------
+# Clases auxiliares
+# ------------------------
 
-    # Cálculo del área del triángulo (A)
-    A = 0.5 * abs(x1*(y2 - y3) + x2*(y3 - y1) + x3*(y1 - y2))
+class Node:
+    def __init__(self, id, x, y, dofs, restrain=None):
+        self.id = id
+        self.x = x
+        self.y = y
+        self.dofs = np.array(dofs)
+        self.restrain = np.array(restrain if restrain else ['f', 'f'])
 
-    # Funciones de forma (N) para el triángulo CST
-    N1 = lambda xi, eta: 1 - xi - eta
-    N2 = lambda xi, eta: xi
-    N3 = lambda xi, eta: eta
+class Section:
+    def __init__(self, thickness, E, nu, type='planeStress'):
+        self.thickness = thickness
+        self.E = E
+        self.nu = nu
+        self.type = type
+        self.D = self._compute_D()
 
-    # Matriz de la deformación en función de las coordenadas naturales
-    B = np.array([[-1, 0, 1, 0, 0, 0],
-                  [0, -1, 0, 1, 0, 0],
-                  [0, 0, 0, 0, 1, 1]])
+    def _compute_D(self):
+        E, nu = self.E, self.nu
+        
+        if isinstance(E, np.ndarray):
+            return E
+        
+        if self.type == 'planeStress':
+            return (E / (1 - nu**2)) * np.array([
+                [1, nu, 0],
+                [nu, 1, 0],
+                [0, 0, (1 - nu) / 2]
+            ])
+        elif self.type == 'planeStrain':
+            coef = E / ((1 + nu)*(1 - 2*nu))
+            return coef * np.array([
+                [1 - nu, nu, 0],
+                [nu, 1 - nu, 0],
+                [0, 0, (1 - 2*nu) / 2]
+            ])
+        else:
+            raise ValueError(f"Invalid type: {self.type}")
 
-    # Cálculo de la matriz de rigidez (ke) y el vector de fuerzas (fe)
-    if ue is None:
-        # Matriz de rigidez local para el elemento triangular CST
-        ke = np.zeros((6, 6))
-        fe = np.zeros(6)
+# ------------------------
+# Clase CST
+# ------------------------
 
-        # Integración sobre el área del triángulo (en este caso es exacta)
-        # Ya que el triángulo tiene una forma de interpolación lineal y el área es constante
+class CST:
+    def __init__(self, element_tag, node_list, section, body_force=None):
+        self.element_tag = element_tag
+        self.node_list = node_list
+        self.section = section
+        self.area = self.compute_area()
+        self.B = self.get_B_matrix()
+        self.Ke = self.get_stiffness_matrix()
+        self.body_force = body_force
+        if self.body_force is not None:
+            self.body_forces(self.body_force)
+        
+    def calculate_indices(self):
+        return np.concatenate([node.dofs for node in self.node_list])
+
+    def get_xy_matrix(self):
+        return np.array([[node.x, node.y] for node in self.node_list])
+
+    def get_centroid(self):
+        return np.mean(self.get_xy_matrix(), axis=0)
+
+    def compute_area(self):
+        x = [n.x for n in self.node_list]
+        y = [n.y for n in self.node_list]
+        return 0.5 * abs(x[0]*(y[1]-y[2]) + x[1]*(y[2]-y[0]) + x[2]*(y[0]-y[1]))
+
+    def get_B_matrix(self):
+        x = [n.x for n in self.node_list]
+        y = [n.y for n in self.node_list]
+        b = [y[1]-y[2], y[2]-y[0], y[0]-y[1]]
+        c = [x[2]-x[1], x[0]-x[2], x[1]-x[0]]
+        B = np.zeros((3, 6))
         for i in range(3):
-            for j in range(3):
-                ke += E * A * np.dot(B.T, B)  # Matriz de rigidez
+            B[0, 2*i] = b[i]
+            B[1, 2*i+1] = c[i]
+            B[2, 2*i] = c[i]
+            B[2, 2*i+1] = b[i]
+        return B / (2 * self.area)
 
-        # Vector de fuerzas internas (este es un ejemplo de integración simple)
-        fe[0] = rho * A  # Fuerzas en los nodos debido a la densidad y el área
+    def get_stiffness_matrix(self):
+        D = self.section.D
+        t = self.section.thickness
+        return t * self.area * self.B.T @ D @ self.B
+    
+    # Añadimos función para calcular e imprimir las fuerzas de cuerpo
 
-        return ke, fe
+    def body_forces(self, body_force_vector):
+        """
+        Calcula las fuerzas nodales equivalentes por una carga de cuerpo constante
+        en el elemento CST.
+        """
+        t = self.section.thickness
+        A = self.area
+        bx, by = body_force_vector
+        f_body = (t * A / 3) * np.array([bx, by, bx, by, bx, by])
+        
+        print("\nFuerzas nodales equivalentes por carga de cuerpo:")
+        print(f"Vector de carga de cuerpo aplicado: {body_force_vector}")
+        print("Fuerzas nodales equivalentes:")
+        print(np.round(f_body, 2))
+        
+        return f_body
 
-    else:
-        # Si el desplazamiento ue está presente, calcular las deformaciones y esfuerzos
-        epsilon_e = np.zeros(3)
-        sigma_e = np.zeros(3)
 
-        # Calculamos las deformaciones a partir del desplazamiento nodal (ue)
-        epsilon_e[0] = (ue[1] - ue[0]) / A  # Deformación en la dirección x
-        epsilon_e[1] = (ue[3] - ue[2]) / A  # Deformación en la dirección y
-        epsilon_e[2] = (ue[4] - ue[5]) / A  # Deformación cortante
+    def get_point_load_forces(self, x, y, force_vector):
+        N = self.get_shape_functions_at(x, y)
+        fx, fy = force_vector
+        return (N.T @ np.array([fx, fy])).flatten()
 
-        # Calculamos los esfuerzos a partir de las deformaciones
-        sigma_e[0] = E * epsilon_e[0]  # Esfuerzo en la dirección x
-        sigma_e[1] = E * epsilon_e[1]  # Esfuerzo en la dirección y
-        sigma_e[2] = E * epsilon_e[2]  # Esfuerzo cortante
 
-        return epsilon_e, sigma_e
+    def get_shape_functions_at(self, x, y):
+        x1, y1 = self.node_list[0].x, self.node_list[0].y
+        x2, y2 = self.node_list[1].x, self.node_list[1].y
+        x3, y3 = self.node_list[2].x, self.node_list[2].y
+        A = self.area * 2
 
-# Ejemplo de uso
+        N1 = ((x2*y3 - x3*y2) + (y2 - y3)*x + (x3 - x2)*y) / A
+        N2 = ((x3*y1 - x1*y3) + (y3 - y1)*x + (x1 - x3)*y) / A
+        N3 = ((x1*y2 - x2*y1) + (y1 - y2)*x + (x2 - x1)*y) / A
 
-# Coordenadas de los nodos (x, y)
-xy = np.array([[0, 0], [4, 0], [0, 6]])
+        return np.array([
+            [N1, 0, N2, 0, N3, 0],
+            [0, N1, 0, N2, 0, N3]
+        ])
 
-# Propiedades del material
-properties = {"E": 210000, "rho": 7800}  # Módulo de elasticidad y densidad
+    def printSummary(self):
+        print(f"\nCST Element {self.element_tag}")
+        print("Type: planeStress")
+        print("Nodes:")
+        for n in self.node_list:
+            print(f"  Node {n.id}: ({n.x}, {n.y}) DOFs: {n.dofs}")
+        print(f"\nDOF indices: {self.calculate_indices()}")
+        print(f"Area: {self.area:.4f}")
+        print("\nXY matrix:\n", self.get_xy_matrix())
+        print("Centroid:", self.get_centroid())
+        print("\nMatrix B:\n", self.B)
+        print("\nStiffness Matrix Ke:\n", self.Ke)
+              
 
-# Desplazamientos nodales (ue) - en caso de que queramos calcular deformaciones y esfuerzos
-ue = np.array([0, 0, 0.005, 0.003, 0, 0.002])
+    def plotGeometry(self):
+        coords = self.get_xy_matrix()
+        coords = np.vstack([coords, coords[0]])
+        plt.plot(coords[:, 0], coords[:, 1], 'k-o')
+        for node in self.node_list:
+            plt.text(node.x, node.y, f'N{node.id}', color='blue')
+        centroid = self.get_centroid()
+        plt.text(centroid[0], centroid[1], f'E{self.element_tag}', color='red')
+        plt.axis('equal')
+        plt.title(f'CST Element {self.element_tag}')
+        plt.grid(True)
+        plt.show()
 
-# Llamada a la función
-ke, fe = cst(xy, properties)  # Si no proporcionamos ue, se calcula la rigidez y fuerzas
-epsilon_e, sigma_e = cst(xy, properties, ue)  # Si proporcionamos ue, se calculan las deformaciones y esfuerzos
+# ------------------------
+# Ensamblaje y resolución
+# ------------------------
 
-# Imprimir los resultados
+def ensamblar_y_resolver(elem, fuerza, nodos):
+    total_dofs = 6
+    K = np.zeros((total_dofs, total_dofs))
+    f = np.zeros((total_dofs, 1))
 
-print("Matriz de Rigidez (ke):")
-print(ke)
+    idx = elem.calculate_indices()
+    K[np.ix_(idx, idx)] += elem.Ke
+    f[idx] += fuerza.reshape(-1, 1)
 
-print("\nVector de Fuerzas (fe):")
-print(fe)
+    restrain_map = np.concatenate([n.restrain for n in nodos])
+    libres = np.where(restrain_map == 'f')[0]
 
-print("\nDeformaciones (epsilon_e):")
-print(epsilon_e)
+    Kff = K[np.ix_(libres, libres)]
+    ff = f[libres]
 
-print("\nEsfuerzos (sigma_e):")
-print(sigma_e)
+    uf = np.linalg.solve(Kff, ff)
+    u = np.zeros((total_dofs, 1))
+    u[libres] = uf
+    return u, f, K
 
-# Graficar el triángulo
-x_coords = xy[:, 0]  # Extraer las coordenadas X de los nodos
-y_coords = xy[:, 1]  # Extraer las coordenadas Y de los nodos
+# ------------------------
+# Caso de estudio (1 elemento)
+# ------------------------
 
-# Cerrar el triángulo agregando el primer nodo al final
-x_coords = np.append(x_coords, x_coords[0])
-y_coords = np.append(y_coords, y_coords[0])
+# Nodos
+node1 = Node(1, 0.0, 0.0, [0, 1], restrain=['r', 'r'])
+node2 = Node(2, 3.0, 1.0, [2, 3], restrain=['f', 'f'])
+node3 = Node(3, 2.0, 2.0, [4, 5], restrain=['f', 'f'])
+nodes = [node1, node2, node3]
 
-# Crear el gráfico
-plt.figure(figsize=(6, 6))
-plt.plot(x_coords, y_coords, 'bo-', label="Triángulo CST")
-plt.fill(x_coords, y_coords, 'cyan', alpha=0.3)
+# Sección
+E = 8*np.array([[4,1,0], [1,4,0],[0,0,2]])
+section = Section(thickness=1, E=E, nu=0.3)
 
-# Etiquetas y título
-plt.title("Triángulo CST")
-plt.xlabel("Coordenada X")
-plt.ylabel("Coordenada Y")
-plt.grid(True)
-plt.legend()
+# Elemento CST
+element = CST(1, [node1, node2, node3], section)
 
-# Mostrar el gráfico
-plt.show()
+# Imprimir resumen
+element.printSummary()
+element.body_forces([0, -1000])
+element.plotGeometry()
+# Aplicar carga puntual en nodo
+F_nodal = element.get_point_load_forces(node3.x, node3.y, [0, -1000])
+
+# Resolver sistema
+u, f, K = ensamblar_y_resolver(element, F_nodal, nodes)
+
+u.flatten(), f.flatten(), K

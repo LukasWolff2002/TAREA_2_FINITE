@@ -6,11 +6,12 @@ import matplotlib.pyplot as plt
 # ========================
 
 class Node:
-    def __init__(self, id, x, y, dofs):
+    def __init__(self, id, x, y, dofs, restrain=None):
         self.id = id
         self.x = x
         self.y = y
         self.dofs = np.array(dofs)
+        self.restrained = np.array(restrain if restrain else ["f", "f"])
 
 class Section:
     def __init__(self, thickness, E, nu, type='planeStress'):
@@ -123,6 +124,19 @@ class CST:
         A = self.area
         bx, by = body_force_vector
         return (t * A / 3) * np.array([bx, by, bx, by, bx, by])
+    
+    def body_forces(self):
+        """
+        Imprime las fuerzas nodales equivalentes asociadas a la carga de cuerpo,
+        usando el vector de carga definido en `load_direction`.
+        """
+        if self.load_direction is None:
+            print("No se ha definido una dirección de carga de cuerpo.")
+            return
+
+        bf = self.get_body_forces(self.load_direction)
+        print(f"Fuerzas nodales equivalentes por carga de cuerpo (load_direction = {self.load_direction}):")
+        print(np.round(bf, 2))
 
     def get_point_load_forces(self, x, y, force_vector):
         fx, fy = force_vector
@@ -163,10 +177,13 @@ class CST:
 # ========================
 
 # Nodos
-node1 = Node(1, 1.5, 2.0, [0, 1])
-node2 = Node(2, 7.0, 3.5, [2, 3])
-node3 = Node(3, 4.0, 7.0, [4, 5])
-nodes = [node1, node2, node3]
+# Nodos para viga en voladizo (cantilever)
+node1 = Node(1, 0.0, 0.0, [0, 1], restrain=['r', 'r'])  # Empotramiento
+node2 = Node(2, 3.0, 0.0, [2, 3], restrain=['f', 'f'])  # Nodo libre
+node3 = Node(3, 3.0, 2.0, [4, 5], restrain=['f', 'f'])  # Nodo libre
+node4 = Node(4, 0, 2.0, [6, 7], restrain=['r', 'r'])  # Nodo libre
+nodes = [node1, node2, node3, node4]
+
 
 # Propiedades del material
 E = 70000
@@ -176,7 +193,7 @@ t = 1 #mm
 section = Section(thickness=t, E=E, nu=nu, type='planeStress')
 
 # Elemento CST
-element = CST(element_tag=1, node_list=nodes, section=section, type='planeStress', print_summary=True)
+element = CST(element_tag=1, node_list=nodes, section=section, load_direction=[1000,0], type='planeStress', print_summary=True)
 
 # ========================
 # Resultados y validaciones
@@ -210,7 +227,7 @@ print("Fuerzas nodales equivalentes usando get_body_forces():")
 print(np.round(f_body_equiv, 2))
 
 # --- Plot opcional ---
-# element.plotGeometry()
+element.plotGeometry()
 
 
 
