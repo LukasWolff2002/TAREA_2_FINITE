@@ -9,9 +9,9 @@ import numpy as np
 # ------------------------
 
 # Nodos
-node1 = Node(1, 0.0, 0.0, [0, 1], restrain=['r', 'r'])
-node2 = Node(2, 3.0, 1.0, [2, 3], restrain=['f', 'f'])
-node3 = Node(3, 2.0, 2.0, [4, 5], restrain=['f', 'f'])
+node1 = Node(1, 0.0, 0.0, [0, 1], restrain=[1, 1])
+node2 = Node(2, 3.0, 1.0, [2, 3], restrain=[0, 0])
+node3 = Node(3, 2.0, 2.0, [4, 5], restrain=[0, 0])
 nodes = [node1, node2, node3]
 
 # Sección

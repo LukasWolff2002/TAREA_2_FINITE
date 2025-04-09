@@ -91,7 +91,7 @@ class CST:
         f[idx] += fuerza.reshape(-1, 1)
 
         restrain_map = np.concatenate([n.restrain for n in nodos])
-        libres = np.where(restrain_map == 'f')[0]
+        libres = np.where(restrain_map == 0)[0]
 
         Kff = K[np.ix_(libres, libres)]
         ff = f[libres]
