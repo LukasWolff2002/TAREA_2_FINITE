@@ -10,13 +10,14 @@ import numpy as np
 
 # Nodos
 node1 = Node(1, 0.0, 0.0, [0, 1], restrain=[1, 1])
-node2 = Node(2, 3.0, 1.0, [2, 3], restrain=[0, 0])
+node2 = Node(2, 3.0, 1.0, [2, 3], restrain=[1, 0])
 node3 = Node(3, 2.0, 2.0, [4, 5], restrain=[0, 0])
 nodes = [node1, node2, node3]
 
 # Sección
 E = 8*np.array([[4,1,0], [1,4,0],[0,0,2]])
-section = Section(thickness=1, E=E, nu=0.3)
+t = 1 # Espesor de la sección
+section = Section(thickness=t, E=E, nu=0.3)
 
 # Elemento CST
 element = CST(1, [node1, node2, node3], section)
