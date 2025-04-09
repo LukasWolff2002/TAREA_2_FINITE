@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from section import Section
 from cst import CST
+from solve import ensamblar_y_resolver
 
 b = 30 #mm
 h = 30 #mm
@@ -42,18 +43,14 @@ for i in range(0, int(L/delta_x)+1):
         nodes.append(Node(node_id, i*delta_x, j*delta_y, [2*i+j, 2*i+j+1]))
         node_id += 1
 
-for node in nodes:
-    print(f"Node ID: {node.id}, Coordinates: ({node.x}, {node.y}), DOFs: {node.dofs}")
-
-print('\n \n \n')
-
 #Ahora ensabmlo los elementos
 elements = []
 i = 1
 for node in nodes:
 
     if node.x == L:
-        print("Este nodo es un nodo de frontera")
+        #Detengo el loop cuando llego al a la linea final de elementos
+        #Ya que no debo crear mas CST
         break
 
     if i%nodos_y != 0:
@@ -76,6 +73,8 @@ for node in nodes:
 
     i += 1
 
+#Plotear los nodos
+plot_nodes(nodes)
 def plot_sections(elements, alpha=0.5):
     plt.figure(figsize=(10, 5))
 
@@ -108,13 +107,8 @@ def plot_sections(elements, alpha=0.5):
     plt.tight_layout()
     plt.show()
 
-
-
 #Plotear los elementos
 plot_sections(elements)
-    
 
 
 
-#Plotear los nodos
-#plot_nodes(nodes)

@@ -86,6 +86,7 @@ class CST:
             [N1, 0, N2, 0, N3, 0],
             [0, N1, 0, N2, 0, N3]
         ])
+    
 
     def printSummary(self):
         print(f"\nCST Element {self.element_tag}")
