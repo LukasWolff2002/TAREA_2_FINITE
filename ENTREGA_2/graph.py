@@ -39,7 +39,8 @@ def plot_full_structure(nodes, elements, u_global=None, deform_scale=0.001, alph
         centroid = elem.get_centroid()
         #ax.text(centroid[0], centroid[1], f'E{elem.element_tag}', fontsize=8, color='red')
         for node in elem.node_list:
-            ax.plot(node.x, node.y, 'bo')
+            pass
+            #ax.plot(node.x, node.y, 'bo')
             #ax.text(node.x + 0.5, node.y + 0.5, f'N{node.id}', fontsize=7, color='blue')
     ax.set_title('Elementos CST con color')
     ax.set_xlabel('X [mm]')
