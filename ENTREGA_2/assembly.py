@@ -20,7 +20,7 @@ class Structure:
         self.delta_y = delta_y
         self.nodos_y = int(h / delta_y) + 1
         self.nodos_x = int(L / delta_x) + 1
-        self.section = Section(thickness=1, E=E, nu=0.3)
+        self.section = Section(thickness=b, E=E, nu=0.3)
 
         self.nodes = []
         self.elements = []

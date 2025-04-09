@@ -8,13 +8,13 @@ from graph import plot_full_structure
 from assembly import Structure
 # ------------------------
 
-b = 30 #mm
-h = 30 #mm
-L = 100 #mm
+b = 200 #mm
+h = 400 #mm
+L = 3000 #mm
 
 #Defino el tamaño de cada elemento en x e y
-delta_x = 10 #mm
-delta_y = 10 #mm
+delta_x = 50 #mm
+delta_y = 50 #mm
 
 E = 210000 #GPa
 
