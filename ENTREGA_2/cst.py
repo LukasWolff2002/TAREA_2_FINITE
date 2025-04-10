@@ -91,6 +91,14 @@ class CST:
             [N1, 0, N2, 0, N3, 0],
             [0, N1, 0, N2, 0, N3]
         ])
+    
+    def get_stress(self, u_global):
+        
+        indices = self.calculate_indices()
+        u_elem = u_global[indices].reshape(-1, 1)  # vector local de desplazamientos
+        stress = self.section.D @ self.B @ u_elem
+        return stress.flatten()
+
         
     def ensamblar_y_resolver(self, fuerza, nodos):
         total_dofs = 6
