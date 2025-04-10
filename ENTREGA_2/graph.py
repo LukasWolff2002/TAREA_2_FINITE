@@ -98,3 +98,43 @@ def plot_full_structure(nodes, elements, u_global=None, deform_scale=0.001, alph
 
     plt.tight_layout()
     plt.show()
+
+def comp_cost (resultados):
+    # Convertir lista de tuplas en arrays separados
+    n_elems, uys, tiempos = zip(*resultados)
+
+    n_elems = np.array(n_elems)
+    uys = np.array(uys)
+    tiempos = np.array(tiempos)
+
+    # La última uy como referencia
+    uy_ref = uys[-1]
+
+    # Error relativo
+    errores = np.abs((uys - uy_ref) / uy_ref)
+
+    # Graficar con dos ejes Y
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+
+    # Eje izquierdo: error relativo
+    color1 = 'tab:blue'
+    ax1.set_xlabel('Número de elementos de la malla')
+    ax1.set_ylabel('Error relativo del desplazamiento', color=color1)
+    ax1.plot(n_elems, errores, 'o-', color=color1, label='Error relativo')
+    ax1.tick_params(axis='y', labelcolor=color1)
+
+
+
+
+    # Eje derecho: tiempo de cómputo
+    ax2 = ax1.twinx()
+    color2 = 'tab:red'
+    ax2.set_ylabel('Tiempo de cómputo [s]', color=color2)
+    ax2.plot(n_elems, tiempos, 's--', color=color2, label='Tiempo de cómputo')
+    ax2.tick_params(axis='y', labelcolor=color2)
+
+    # Título y leyenda combinada
+    fig.suptitle('Convergencia del error y costo computacional')
+    fig.tight_layout()
+    plt.grid(True)
+    plt.show()
