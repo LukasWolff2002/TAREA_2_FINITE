@@ -9,10 +9,6 @@ from assembly import Structure
 # ------------------------
 
 def Run_script (b,h,L,delta_x, delta_y, Px=0, Force_x=False):
-    
-    b = 200 #mm
-    h = 400 #mm
-    L = 3000 #mm
 
     E = 210000 #GPa
 
