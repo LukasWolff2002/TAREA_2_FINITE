@@ -8,13 +8,7 @@ from graph import plot_full_structure
 from assembly import Structure
 # ------------------------
 
-def Run_script (delta_x, delta_y, Px=0, Force_x=False):
-    
-    b = 200 #mm
-    h = 400 #mm
-    L = 3000 #mm
-
-    E = 210000 #GPa
+def Run_script (E,b,h,L,delta_x, delta_y, Px=0, Force_x=False):
 
     structure_1 = Structure(b, h, L, delta_x, delta_y, E)
 
