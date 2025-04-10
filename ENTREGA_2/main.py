@@ -8,7 +8,7 @@ from graph import plot_full_structure
 from assembly import Structure
 # ------------------------
 
-def main (delta_x, delta_y, Force_x=False):
+def Run_script (delta_x, delta_y, Force_x=False):
     Px = 1000000
     b = 200 #mm
     h = 400 #mm
@@ -67,5 +67,3 @@ def main (delta_x, delta_y, Force_x=False):
         tensiones.append((elem.element_tag, elem.get_centroid(), stress))
 
     plot_full_structure(structure_1.nodes, structure_1.elements, u_global=estructura.u_global, deform_scale=1000)
-
-main(True)

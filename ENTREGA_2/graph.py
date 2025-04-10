@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.interpolate import griddata
 
 def von_mises_stress(sigma):
     sx, sy, txy = sigma
@@ -59,7 +60,7 @@ def plot_full_structure(nodes, elements, u_global=None, deform_scale=0.001, alph
     ax.grid(True)
     ax.axis('equal')
 
-    # --- Subplot 4: Von Mises ---
+        # --- Subplot 4: Von Mises interpolado ---
     ax = axs[1, 1]
     if u_global is not None:
         centros = []
@@ -73,19 +74,27 @@ def plot_full_structure(nodes, elements, u_global=None, deform_scale=0.001, alph
         centros = np.array(centros)
         vm_values = np.array(vm_values)
 
-        scatter = ax.scatter(
-            centros[:, 0], centros[:, 1], c=vm_values,
-            cmap='plasma', edgecolors='k', s=80
-        )
-        cbar = plt.colorbar(scatter, ax=ax)
+        # Crear malla regular para interpolar
+        xi = np.linspace(centros[:, 0].min(), centros[:, 0].max(), 300)
+        yi = np.linspace(centros[:, 1].min(), centros[:, 1].max(), 300)
+        Xi, Yi = np.meshgrid(xi, yi)
+
+        # Interpolación de los valores de Von Mises sobre la malla
+        Z = griddata(centros, vm_values, (Xi, Yi), method='cubic')
+
+        # Dibujar mapa interpolado
+        im = ax.contourf(Xi, Yi, Z, levels=100, cmap='plasma')
+        cbar = plt.colorbar(im, ax=ax)
         cbar.set_label('Von Mises [MPa]')
-        ax.set_title('Mapa de tensión de Von Mises')
+
+        ax.set_title('Mapa de tensión de Von Mises (interpolado)')
         ax.set_xlabel('X [mm]')
         ax.set_ylabel('Y [mm]')
         ax.axis('equal')
         ax.grid(True)
     else:
         ax.set_title('Von Mises (requiere u_global)')
+
 
     plt.tight_layout()
     plt.show()
