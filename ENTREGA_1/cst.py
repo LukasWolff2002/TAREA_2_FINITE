@@ -45,25 +45,37 @@ class CST:
         t = self.section.thickness
         return t * self.area * self.B.T @ D @ self.B
     
-    # Añadimos función para calcular e imprimir las fuerzas de cuerpo
-    def apply_point_body_force(self, x, y, force_vector):
-        """
-        Aplica una fuerza puntual dentro del elemento y almacena su ubicación y dirección.
-        """
-        N = self.get_interpolation_matrix(x, y)
-        fx, fy = force_vector
-        f_puntual = (N.T @ np.array([fx, fy])).flatten()
+    def apply_point_body_force(self, x=None, y=None, force_vector=None, use_centroid=False):
+        
+        if force_vector is None:
+            raise ValueError("Debes proporcionar un vector de fuerza como [fx, fy]")
 
-        # Guardar para graficar
+        # Si no se especifica punto, usar el centroide
+        if use_centroid == True:
+            x1, y1 = self.node_list[0].x, self.node_list[0].y
+            x2, y2 = self.node_list[1].x, self.node_list[1].y
+            x3, y3 = self.node_list[2].x, self.node_list[2].y
+            x = (x1 + x2 + x3) / 3
+            y = (y1 + y2 + y3) / 3
+        
+        
+        # Obtener matriz de forma N en el punto dado
+        N = self.get_interpolation_matrix(x, y)  # 2x6
+
+        fx, fy = force_vector
+        f_puntual = (N.T @ np.array([fx, fy])).flatten()  # 6x1
+
+        # Guardar para graficar (opcional)
         self.body_point = (x, y)
         self.body_vector = (fx, fy)
 
         print("\nFuerza puntual en punto interno del elemento:")
-        print(f"Ubicación: ({x}, {y})")
+        print(f"Ubicación: ({x:.2f}, {y:.2f})")
         print(f"Fuerza: {force_vector}")
         print(f"Fuerzas nodales equivalentes: {np.round(f_puntual, 2)}")
 
         return f_puntual
+
 
 
     def get_interpolation_matrix(self, x, y):
