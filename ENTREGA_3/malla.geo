@@ -123,14 +123,6 @@ vol8[] = Extrude {0, 0,  2.5} { Surface{5}; };
 Physical Volume("Extrusion7") = {vol7[1]};
 Physical Volume("Extrusion8") = {vol8[1]};
 
-// === Agrupación final de todos los volúmenes en un solo grupo físico ===
-Physical Volume("CuerpoCompleto") = {
-  vol1[1], vol2[1],
-  vol3[1], vol4[1],
-  vol5[1], vol6[1],
-  vol7[1], vol8[1]
-};
 
-SetFactory("Built-in");
 
 
