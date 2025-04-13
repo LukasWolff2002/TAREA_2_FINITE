@@ -52,16 +52,16 @@ Line Loop(2000) = {
   205         // 204 → 203
 };
 
-Plane Surface(2) = {2000};  // sin agujeros internos
+
 Plane Surface(3) = {2000, 1000};
 
 // === LLAVE 17 ===
 
-Point(300) = {-65, -5, 0, 1.0};
-Point(301) = {-59.735, 7.55, 0, 1.0};
-Point(302) = {-51.936, -7.526, 0, 1.0};
-Point(303) = {-70.898, 1.806, 0, 1.0};
-Point(304) = {-63.542, -13.529, 0, 1.0};
+Point(300) = {-61, -2, 0, 1.0};
+Point(301) = {-54.347, 9.174, 0, 1.0};
+Point(302) = {-48.981, -6.953, 0, 1.0};
+Point(303) = {-70.548, 3.777, 0, 1.0};
+Point(304) = {-65.172, -12.350, 0, 1.0};
 
 Line(301) = {301, 303};
 Line(302) = {302, 304};
@@ -74,11 +74,11 @@ Plane Surface(4) = {3000};
 
 // === LLAVE 13 ===
 
-Point(400) = {61.753, 4.113, 0, 1.0};
-Point(401) = {60.44, -4.792, 0, 1.0};
-Point(402) = {52.912, 5.799, 0, 1.0};
-Point(403) = {69.422, 1.593, 0, 1.0};
-Point(404) = {62.341, 12.51, 0, 1.0};
+Point(400) = {61, 2, 0, 1.0};
+Point(401) = {57.151, -6.135, 0, 1.0};
+Point(402) = {53.049, 6.198, 0, 1.0};
+Point(403) = {69.352, -2.068, 0, 1.0};
+Point(404) = {65.251, 10.265, 0, 1.0};
 
 // Desde 402 → 404 → 214 → 215 → 403 → 401 → 402
 Line(402) = {402, 404};             // 402 → 404
@@ -99,29 +99,10 @@ Plane Surface(5) = {4000};
 
 
 
-// === Extrusión simétrica de Superficie 1 ===
-vol1[] = Extrude {0, 0, -0.8} { Surface{1}; };
-vol2[] = Extrude {0, 0,  0.8} { Surface{1}; };
-Physical Volume("Extrusion1") = {vol1[1]};
-Physical Volume("Extrusion2") = {vol2[1]};
 
-// === Extrusión simétrica de Superficie 3 ===
-vol3[] = Extrude {0, 0, -1.5} { Surface{3}; };
-vol4[] = Extrude {0, 0,  1.5} { Surface{3}; };
-Physical Volume("Extrusion3") = {vol3[1]};
-Physical Volume("Extrusion4") = {vol4[1]};
 
-// === Extrusión simétrica de Superficie 4 ===
-vol5[] = Extrude {0, 0, -2.5} { Surface{4}; };
-vol6[] = Extrude {0, 0,  2.5} { Surface{4}; };
-Physical Volume("Extrusion5") = {vol5[1]};
-Physical Volume("Extrusion6") = {vol6[1]};
 
-// === Extrusión simétrica de Superficie 5 ===
-vol7[] = Extrude {0, 0, -2.5} { Surface{5}; };
-vol8[] = Extrude {0, 0,  2.5} { Surface{5}; };
-Physical Volume("Extrusion7") = {vol7[1]};
-Physical Volume("Extrusion8") = {vol8[1]};
+
 
 
 
