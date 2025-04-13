@@ -121,13 +121,8 @@ Physical Volume("Extrusion7") = {vol7[1]};
 Physical Volume("Extrusion8") = {vol8[1]};
 
 
+Physical Surface("RestriccionFija") = {4291};
+Physical Surface("RestriccionFija2") = {4259};
 
-
-
-
-
-
-
-
-
-
+Physical Surface("Fuerza") = {4211};
+Physical Surface("Fuerza2") = {4179};
