@@ -115,13 +115,6 @@ Physical Surface(2) = {3};  // Superficie exterior con hueco interior
 Physical Surface(3) = {4};  // Superficie de la llave izquierda
 Physical Surface(4) = {5};  // Superficie de la llave derecha
 
-// === PARÁMETROS DE MALLA ===
-Mesh.Algorithm = 6;
-Mesh.ElementOrder = 1;
-Mesh.CharacteristicLengthFactor = 1;
-
-Mesh 2;
-
 Physical Line(10) = {306, 307};  // Borde fijo de la llave izquierda
 
 Physical Line(11) = {404};  // Arco con carga distribuida
