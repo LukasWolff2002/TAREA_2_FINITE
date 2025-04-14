@@ -1,5 +1,8 @@
 SetFactory("Built-in");
 
+// === PARÁMETRO DE DISTANCIA PARA PUNTOS INTERMEDIOS ===
+d = 16.0;
+
 Point(101) = {-27.5, 3.25, 0, 1.0};     // arriba izquierda
 Point(102) = {27.5, 3.25, 0, 1.0};      // arriba derecha
 Point(103) = {27.5, -3.25, 0, 1.0};     // abajo derecha
@@ -62,13 +65,32 @@ Point(302) = {-48.981, -6.953, 0, 1.0};
 Point(303) = {-70.548, 3.777, 0, 1.0};
 Point(304) = {-65.172, -12.350, 0, 1.0};
 
-Line(301) = {301, 303};
-Line(302) = {302, 304};
-Circle(303) = {302,300,301};
+// --- Punto intermedio entre 303 y 301 (origen: 303) ---
+dx = -54.347 - (-70.548);
+dy = 9.174 - 3.777;
+L = Sqrt(dx^2 + dy^2);
+x_target = -70.548 + d * dx / L;
+y_target = 3.777 + d * dy / L;
+Point(305) = {x_target, y_target, 0, 1.0};
+
+// --- Punto intermedio entre 304 y 302 (origen: 304) ---
+dx2 = -48.981 - (-65.172);
+dy2 = -6.953 - (-12.350);
+L2 = Sqrt(dx2^2 + dy2^2);
+x_target2 = -65.172 + d * dx2 / L2;
+y_target2 = -12.350 + d * dy2 / L2;
+Point(306) = {x_target2, y_target2, 0, 1.0};
+
+// --- Geometría de la llave 17 ---
+Line(301) = {301, 305};
+Line(306) = {305, 303};
+Line(302) = {302, 306};
+Line(307) = {306, 304};
+Circle(303) = {302, 300, 301};
 Circle(304) = {303, 209, 203};
 Circle(305) = {304, 209, 204};
 
-Line Loop(3000) = {301, 304, -205, -305, -302, 303};  // ¡Corregido!
+Line Loop(3000) = {301, 306, 304, -205, -305, -302, -307, 303};
 Plane Surface(4) = {3000};
 
 // === LLAVE 13 ===
@@ -91,10 +113,6 @@ Circle(403) = {402, 400, 401};      // 402 → 401 → necesitamos invertir → 
 
 Line Loop(4000) = {402, 404, 208, -405, -401, -403};
 Plane Surface(5) = {4000};
-
-
-
-
 
 // === Extrusión simétrica de Superficie 1 ===
 vol1[] = Extrude {0, 0, -0.8} { Surface{1}; };
@@ -121,8 +139,37 @@ Physical Volume("Extrusion7") = {vol7[1]};
 Physical Volume("Extrusion8") = {vol8[1]};
 
 
-Physical Surface("RestriccionFija") = {4291};
-Physical Surface("RestriccionFija2") = {4259};
+Line(1000) = {569, 573};
+Line(1001) = {573, 540};
+Line(1002) = {540, 536};
+Line(1003) = {536, 569};
 
-Physical Surface("Fuerza") = {4211};
-Physical Surface("Fuerza2") = {4179};
+Line Loop(6000) = {1000, 1001, 1002, 1003};
+Plane Surface(6) = {6000};
+
+Line(2000) = {588, 592};
+Line(2001) = {592, 559};
+Line(2002) = {559, 555};
+Line(2003) = {555, 588};
+
+Line Loop(7000) = {2000, 2001, 2002, 2003};
+Plane Surface(7) = {7000};
+
+Circle(3000) = {627, 631, 632};
+Line(3001) = {632, 607};
+Circle(3002) = {607,606, 602};
+Line(3003) = {602, 627};
+
+Line Loop(8000) = {3000, 3001, 3002, 3003};
+Plane Surface(8) = {8000};
+
+Physical Surface("RestriccionFija") = {6};
+Physical Surface("RestriccionFija2") = {7};
+
+Physical Surface("Fuerza") = {8};
+
+// El peso se estima en 8.61 g a partir del archivo STL
+
+
+
+
