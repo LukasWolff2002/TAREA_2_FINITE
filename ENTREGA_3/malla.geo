@@ -1,7 +1,7 @@
 SetFactory("Built-in");
 
 // === PARÁMETRO DE DISTANCIA PARA PUNTOS INTERMEDIOS ===
-d = 10.0;
+d = 16.0;
 
 // === INTERIOR CENTRAL ===
 Point(101) = {-27.5, 3.25, 0, 1.0};
@@ -125,3 +125,5 @@ Mesh 2;
 Physical Line(10) = {306, 307};  // Borde fijo de la llave izquierda
 
 Physical Line(11) = {404};  // Arco con carga distribuida
+
+// Se eligio un contacto de 16 mm ya que la tuerca usada es de 17 mm de espesor, de esta manera se deja un margen de 1 mm
