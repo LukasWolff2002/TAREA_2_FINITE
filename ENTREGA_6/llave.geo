@@ -117,3 +117,8 @@ Physical Surface(4) = {5};  // Superficie de la llave derecha
 
 
 // Se eligio un contacto de 16 mm ya que la tuerca usada es de 17 mm de espesor, de esta manera se deja un margen de 1 mm
+
+// 305 a 305 es una superficies
+Physical Line("Restr Sup") = {306};
+Physical Line("Restr Inf") = {307};
+Physical Line("Fuerza") = {404};

@@ -28,6 +28,10 @@ class Solve:
         self.free_dofs = np.where(restrain_map == 0)[0]
         self.fixed_dofs = np.where(restrain_map == 1)[0]
 
+        print("N° de DOFs libres:", len(self.free_dofs))
+        print("N° de DOFs fijos:", len(self.fixed_dofs))
+
+
         # Aplicar condiciones
         for dof in self.fixed_dofs:
             self.K_global[dof, :] = 0

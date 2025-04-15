@@ -8,8 +8,8 @@ class Node:
         self.id = id
         self.x = x
         self.y = y
-        if dofs == None:
-            dofs = np.array([id, id+1])
+        if dofs is None:
+            self.dofs = np.array([id * 2, id * 2 + 1])
         else:
             self.dofs = np.array(dofs)
         self.restrain = np.array(restrain)
