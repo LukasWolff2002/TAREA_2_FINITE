@@ -3,6 +3,10 @@ import numpy as np
 class Solve:
     def __init__(self, nodes, elements):
         self.nodes = nodes
+
+           
+
+
         self.elements = elements
         self.ndof = len(nodes) * 2  # 2 DOFs por nodo
         self.K_global = np.zeros((self.ndof, self.ndof))
@@ -39,8 +43,33 @@ class Solve:
             self.K_global[dof, dof] = 1
             self.f_global[dof] = 0
 
+    def check_zero_rows(self):
+        zero_rows = np.where(~self.K_global.any(axis=1))[0]
+        if len(zero_rows) > 0:
+            print(f"❌ Fila(s) completamente nulas en K_global: {zero_rows}")
+        else:
+            print("✅ No hay filas nulas en K_global")
+
+        return zero_rows
+
+
     def solve(self):
         self.assemble()
+
+        #=====================================================
+        #SOLUCION TEMPORAL
+        # Paso extra: detectar y restringir DOFs sin rigidez
+        filas_nulas = self.check_zero_rows()
+        for dof in filas_nulas:
+            nodo_id = dof // 2
+            tipo = 'ux' if dof % 2 == 0 else 'uy'
+            print(f"DOF {dof} ({tipo}) corresponde al nodo {nodo_id}")
+            if nodo_id < len(self.nodes):
+                print(f"⚠️ Nodo {nodo_id} sin rigidez. Se aplicará restricción.")
+                self.nodes[nodo_id].restrain = [1, 1]
+
+        #=====================================================
+
         self.apply_boundary_conditions()
         self.u_global = np.linalg.solve(self.K_global, self.f_global)
         return self.u_global
