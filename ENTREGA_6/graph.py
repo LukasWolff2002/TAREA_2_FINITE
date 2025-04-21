@@ -20,7 +20,7 @@ def plot_full_structure(nodes, elements, u_global=None, deform_scale=0.001, alph
     ax.set_xlabel('X [mm]')
     ax.set_ylabel('Y [mm]')
     ax.grid(True)
-    ax.axis('equal')
+    ax.axis('equal') 
 
     # --- Subplot 2: Elementos CST ---
     ax = axs[0, 1]
