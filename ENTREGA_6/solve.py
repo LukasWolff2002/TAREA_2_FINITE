@@ -5,8 +5,6 @@ class Solve:
         self.nodes = nodes
 
            
-
-
         self.elements = elements
         self.ndof = len(nodes) * 2  # 2 DOFs por nodo
         self.K_global = np.zeros((self.ndof, self.ndof))
