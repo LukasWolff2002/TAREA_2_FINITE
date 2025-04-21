@@ -5,8 +5,6 @@ class Solve:
         self.nodes = nodes
 
            
-
-
         self.elements = elements
         self.ndof = len(nodes) * 2  # 2 DOFs por nodo
         self.K_global = np.zeros((self.ndof, self.ndof))
@@ -55,20 +53,6 @@ class Solve:
 
     def solve(self):
         self.assemble()
-
-        #=====================================================
-        #SOLUCION TEMPORAL
-        # Paso extra: detectar y restringir DOFs sin rigidez
-        filas_nulas = self.check_zero_rows()
-        for dof in filas_nulas:
-            nodo_id = dof // 2
-            tipo = 'ux' if dof % 2 == 0 else 'uy'
-            print(f"DOF {dof} ({tipo}) corresponde al nodo {nodo_id}")
-            if nodo_id < len(self.nodes):
-                print(f"⚠️ Nodo {nodo_id} sin rigidez. Se aplicará restricción.")
-                self.nodes[nodo_id].restrain = [1, 1]
-
-        #=====================================================
 
         self.apply_boundary_conditions()
         self.u_global = np.linalg.solve(self.K_global, self.f_global)
