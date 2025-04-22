@@ -43,7 +43,7 @@ class Node:
         plt.legend()
         plt.show()
 
-    def plot_nodes_por_grupo(grupo_nodos_dict, title, show_ids=False):
+    def plot_nodes_por_grupo(grupo_nodos_dict, title, show_ids=False, save=True):
         """
         Plotea nodos por grupo con colores diferentes.
 
@@ -91,5 +91,9 @@ class Node:
         ax.grid(True)
         #ax.legend()
 
-        fig.savefig(f"INFORME/GRAFICOS/{title}_nodes_por_grupo.png", dpi=300, bbox_inches='tight')
-        plt.close()
+        if save:
+            fig.savefig(f"INFORME/GRAFICOS/{title}_nodes_por_grupo.png", dpi=300, bbox_inches='tight')
+            plt.close()
+
+        else:
+            plt.show()
