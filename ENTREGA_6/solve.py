@@ -39,8 +39,8 @@ class Solve:
         self.fixed_dofs = np.array(self.fixed_dofs)
         self.free_dofs = np.array(self.free_dofs)
 
-        print("N° de DOFs libres:", len(self.free_dofs))
-        print("N° de DOFs fijos:", len(self.fixed_dofs))
+        #print("N° de DOFs libres:", len(self.free_dofs))
+        #print("N° de DOFs fijos:", len(self.fixed_dofs))
 
 
         # Aplicar condiciones
@@ -53,9 +53,11 @@ class Solve:
     def check_zero_rows(self):
         zero_rows = np.where(~self.K_global.any(axis=1))[0]
         if len(zero_rows) > 0:
-            print(f"❌ Fila(s) completamente nulas en K_global: {zero_rows}")
+            pass
+            #print(f"❌ Fila(s) completamente nulas en K_global: {zero_rows}")
         else:
-            print("✅ No hay filas nulas en K_global")
+            pass
+            #print("✅ No hay filas nulas en K_global")
 
         return zero_rows
 
@@ -92,32 +94,43 @@ class Solve:
         return ux, uy
 
     def print_summary(self):
-        print("Desplazamientos globales:")
+       
         for i, node in enumerate(self.nodes):
             ux, uy = self.get_displacement_at_node(node.id)
-            print(f"Nodo {node.id}: ux = {ux:.4e} mm, uy = {uy:.4e} mm")
+           
 
     def compute_reactions(self):
-        """
-        Calcula las reacciones en los DOFs restringidos usando la matriz original.
-        Guarda los resultados en self.reactions.
-        """
+
         # Usar las matrices antes de aplicar las condiciones de borde
         R_total = self.K_original @ self.u_global - self.f_original
 
         self.reactions = np.zeros_like(self.f_global)
         self.reactions[self.fixed_dofs] = R_total[self.fixed_dofs]
 
-        print("\n🔧 Reacciones en DOFs restringidos:")
+
         for node in self.nodes:
             for dof_val, dof_idx in zip(node.restrain, node.dofs):
                 if dof_val == 1:
                     rxn = float(self.reactions[dof_idx])
                     dof_name = "ux" if dof_idx % 2 == 1 else "uy"
-                    print(f"Nodo {node.id} → DOF {dof_idx} ({dof_name}): reacción = {rxn:.4e} N")
+                   
 
         return self.reactions
     
+    def print_applied_forces(self):
+    
+
+        # Usa f_original si existe, si no, usa f_global
+        f = self.f_original if hasattr(self, 'f_original') else self.f_global
+
+        for node in self.nodes:
+            dof_x, dof_y = node.dofs
+            fx = f[dof_x][0] if dof_x < len(f) else 0.0
+            fy = f[dof_y][0] if dof_y < len(f) else 0.0
+
+    
+
+            
 
 
 

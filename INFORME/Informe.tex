@@ -6,6 +6,9 @@
 \usepackage[spanish]{babel}  % Ajusta el idioma del documento a español.
 \usepackage{tabularx}  % Permite la creación de tablas con ancho ajustable.
 
+\usepackage{caption}
+\usepackage{subcaption}
+
 % Paquete de geometría para configurar márgenes y tamaño de papel
 \usepackage[letterpaper, margin=3cm]{geometry}
 
@@ -95,7 +98,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\raisebox{0.20cm}{\textbf{Finite Elements - IOC5107}}}
-\fancyhead[R]{\raisebox{0.1cm}{\includegraphics[width=0.25\linewidth]{img/LOGO_UNIVERSIDAD.jpg}}}
+\fancyhead[R]{\raisebox{0.1cm}{\includegraphics[width=0.25\linewidth]{LOGO_UNIVERSIDAD.jpg}}}
 \fancyhead[C]{\rule{\textwidth}{0.6pt}}
 \fancyfoot[C]{\rule{\textwidth}{0.6pt}}
 \fancyfoot[R]{\raisebox{-1.5\baselineskip}{\thepage}}
@@ -123,7 +126,7 @@
 %----------------------------------------------------------------------------------------
 %	ENCABEZADO
 %----------------------------------------------------------------------------------------
-\includegraphics[width=10cm]{img/LOGO_UNIVERSIDAD.jpg}\\ % Si esta plantilla se copio correctamente, va a llevar la imagen del logo de la facultad.OBS: Es necesario incluir el paquete: graphicx
+\includegraphics[width=10cm]{LOGO_UNIVERSIDAD.jpg}\\ % Si esta plantilla se copio correctamente, va a llevar la imagen del logo de la facultad.OBS: Es necesario incluir el paquete: graphicx
 \vspace{3cm}
 %----------------------------------------------------------------------------------------
 %	SECCION DEL TITULO
@@ -186,5 +189,213 @@ This report presents the structural analysis of a 3D-printed wrench using 2D tri
 Three cases are considered: (a) a total vertical load of 30 kgf applied as a distributed force, (b) the same load applied at a single node, and (c) a distributed load including the effect of self-weight. Each case includes graphs of the deformed shape, stress and strain components, principal values, and a discussion of mesh convergence and precision techniques.
 
 The analysis also includes an optimization study to minimize the maximum principal tensile stress while maintaining constant material volume. The analysis was perfomed using a \textit{Python} program that implementes this methodology. For the mesh generation and optimization, the GMESH \textit{software} was used.
+
+\newpage
+\section{B case}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{GRAFICOS/Case b_nodes_por_grupo.png}
+  \caption{Caption}
+  \label{fig:wrench}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{GRAFICOS/Case b_elementos.png}
+  \caption{Caption}
+  \label{fig:deformed_shape}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{GRAFICOS/Case b_fuerzas.png}
+  \caption{Caption}
+  \label{fig:strain}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{GRAFICOS/Case b_deformada.png}
+  \caption{Caption}
+  \label{fig:stress}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{GRAFICOS/Case b_deformada_reacciones.png}
+  \caption{Caption}
+  \label{fig:principal}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{GRAFICOS/Case b_von_mises.png}
+  \caption{Caption}
+  \label{fig:principal}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{GRAFICOS/Case b - sigma_xx.png}
+    \caption{Caption}
+    \label{fig:deformada_reacciones}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{GRAFICOS/Case b - sigma_yy.png}
+    \caption{Caption}
+    \label{fig:von_mises}
+  \end{subfigure}
+  \caption{Caption}
+  \label{fig:analisis_estructural}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{GRAFICOS/Case b - epsilon_xx.png}
+    \caption{Caption}
+    \label{fig:deformada_reacciones}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{GRAFICOS/Case b - epsilon_yy.png}
+    \caption{Caption}
+    \label{fig:von_mises}
+  \end{subfigure}
+  \caption{Caption}
+  \label{fig:analisis_estructural}
+\end{figure}
+
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{GRAFICOS/Case b - tau_xy.png}
+    \caption{Caption}
+    \label{fig:deformada_reacciones}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{GRAFICOS/Case b - gamma_xy.png}
+    \caption{Caption}
+    \label{fig:von_mises}
+  \end{subfigure}
+  \caption{Caption}
+  \label{fig:analisis_estructural}
+\end{figure}
+
+\section{C case}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{GRAFICOS/Case c_nodes_por_grupo.png}
+  \caption{Caption}
+  \label{fig:wrench}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{GRAFICOS/Case c_elementos.png}
+  \caption{Caption}
+  \label{fig:deformed_shape}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{GRAFICOS/Case c_fuerzas.png}
+  \caption{Caption}
+  \label{fig:strain}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{GRAFICOS/Case c_deformada.png}
+  \caption{Caption}
+  \label{fig:stress}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{GRAFICOS/Case c_deformada_reacciones.png}
+  \caption{Caption}
+  \label{fig:principal}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{GRAFICOS/Case c_von_mises.png}
+  \caption{Caption}
+  \label{fig:principal}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{GRAFICOS/Case c - sigma_xx.png}
+    \caption{Caption}
+    \label{fig:deformada_reacciones}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{GRAFICOS/Case c - sigma_yy.png}
+    \caption{Caption}
+    \label{fig:von_mises}
+  \end{subfigure}
+  \caption{Caption}
+  \label{fig:analisis_estructural}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{GRAFICOS/Case c - epsilon_xx.png}
+    \caption{Caption}
+    \label{fig:deformada_reacciones}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{GRAFICOS/Case c - epsilon_yy.png}
+    \caption{Caption}
+    \label{fig:von_mises}
+  \end{subfigure}
+  \caption{Caption}
+  \label{fig:analisis_estructural}
+\end{figure}
+
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{GRAFICOS/Case c - tau_xy.png}
+    \caption{Caption}
+    \label{fig:deformada_reacciones}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{GRAFICOS/Case c - gamma_xy.png}
+    \caption{Caption}
+    \label{fig:von_mises}
+  \end{subfigure}
+  \caption{Caption}
+  \label{fig:analisis_estructural}
+\end{figure}
+
+
+
 
 \end{document} % Fin del documento

@@ -43,7 +43,7 @@ class Node:
         plt.legend()
         plt.show()
 
-    def plot_nodes_por_grupo(grupo_nodos_dict, show_ids=False):
+    def plot_nodes_por_grupo(grupo_nodos_dict, title, show_ids=False):
         """
         Plotea nodos por grupo con colores diferentes.
 
@@ -51,28 +51,45 @@ class Node:
         - grupo_nodos_dict: dict con nombre del grupo como clave y lista de nodos como valor
         - show_ids: muestra IDs si True
         """
-        plt.figure(figsize=(7, 7))
+        all_x = []
+        all_y = []
+
+        for nodos in grupo_nodos_dict.values():
+            all_x.extend([n.x for n in nodos])
+            all_y.extend([n.y for n in nodos])
+
+        x_min, x_max = min(all_x), max(all_x)
+        y_min, y_max = min(all_y), max(all_y)
+        x_margin = (x_max - x_min) * 0.05
+        y_margin = (y_max - y_min) * 0.05
+
+        x_range = (x_max - x_min) + 2 * x_margin
+        y_range = (y_max - y_min) + 2 * y_margin
+
+        fixed_width = 7  # pulgadas
+        aspect_ratio = y_range / x_range
+        height = fixed_width * aspect_ratio
+
+        fig, ax = plt.subplots(figsize=(fixed_width, height))
         colors = plt.cm.get_cmap("tab10", len(grupo_nodos_dict))
 
         for i, (grupo, nodos) in enumerate(grupo_nodos_dict.items()):
             xs = [n.x for n in nodos]
             ys = [n.y for n in nodos]
-            plt.scatter(xs, ys, s=2, color=colors(i), label=grupo)
+            ax.scatter(xs, ys, s=5, color=colors(i), label=grupo)
 
             if show_ids:
                 for node in nodos:
-                    plt.text(node.x + 0.5, node.y + 0.5, str(node.id), fontsize=6)
+                    ax.text(node.x + 0.5, node.y + 0.5, str(node.id), fontsize=6)
 
-        plt.xlabel("x")
-        plt.ylabel("y")
-        plt.title("Nodos por grupo físico")
-        plt.axis('equal')
-        plt.grid(True)
-        plt.legend()
-        plt.show()
+        ax.set_xlim(x_min - x_margin, x_max + x_margin)
+        ax.set_ylim(y_min - y_margin, y_max + y_margin)
+        ax.set_aspect('equal', adjustable='box')
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
+        ax.set_title("Nodos por grupo físico")
+        ax.grid(True)
+        #ax.legend()
 
-
-
-    
-
-   
+        fig.savefig(f"INFORME/GRAFICOS/{title}_nodes_por_grupo.png", dpi=300, bbox_inches='tight')
+        plt.close()

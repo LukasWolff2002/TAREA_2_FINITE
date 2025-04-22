@@ -69,11 +69,6 @@ class CST:
         self.body_point = (x, y)
         self.body_vector = (fx, fy)
 
-        print("\nFuerza puntual en punto interno del elemento:")
-        print(f"Ubicación: ({x}, {y})")
-        print(f"Fuerza: {force_vector}")
-        print(f"Fuerzas nodales equivalentes: {np.round(f_puntual, 2)}")
-
         return f_puntual
 
 
@@ -189,6 +184,24 @@ class CST:
             return ν * (σ1 + σ2)
         else:
             return 0.0  # plano de tensiones
+        
+    def get_strain(self, u_global):
+        """
+        Calcula el vector de deformaciones ε = B * u en el elemento (constante).
+        """
+        indices = self.calculate_indices()
+        u_elem = u_global[indices].reshape(-1, 1)
+        strain = self.B @ u_elem  # ε = B·u
+        return strain.flatten()
+
+    def get_stress(self, u_global):
+        """
+        Calcula el vector de tensiones σ = D * B * u en el elemento.
+        """
+        strain = self.get_strain(u_global)
+        stress = self.section.D @ strain
+        return stress.flatten()
+
 
 
     
