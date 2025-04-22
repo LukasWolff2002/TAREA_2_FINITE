@@ -237,9 +237,9 @@ def compute_nodal_von_mises(elements, u_global):
 def main(title, self_weight=False, point_force=False, distribuited_force = False, def_scale=1, force_scale=1e-2, reaction_scale=1e-2):
     input_file = "ENTREGA_6/llave.geo"
     output_file = "ENTREGA_6/malla.msh"
-    lc = 5
+    lc = 2.5
 
-    q = 294.199 #N
+    q = 294 #N
 
     generate_mesh(input_file, output_file, lc)
     grupos, mesh = make_nodes_groups(output_file, title)
@@ -265,9 +265,6 @@ def main(title, self_weight=False, point_force=False, distribuited_force = False
         #Aplico una fuerza a ese nodo
         dof = nodo.id * 2
         estructure.apply_force(dof, -q)
-
-        
-            
 
     if distribuited_force:
         nodos_fuerza = grupos["Fuerza"]
@@ -419,27 +416,72 @@ def main(title, self_weight=False, point_force=False, distribuited_force = False
         plot_scalar_field(nodes, elements, εyy, r"$\varepsilon_{yy}$", f"{title_prefix} - epsilon_yy")
         plot_scalar_field(nodes, elements, γxy, r"$\gamma_{xy}$", f"{title_prefix} - gamma_xy")
         
-
-
     nodal_fields = compute_nodal_stress_strain(estructure.nodes, estructure.elements, estructure.u_global)
     plot_all_scalar_fields_separately(estructure.nodes, estructure.elements, nodal_fields, title)
 
+    def compute_nodal_principal_fields(nodes, elements, u_global):
+        """
+        Calcula los esfuerzos y deformaciones principales σ1, σ2, ε1, ε2 por nodo.
+        Devuelve 4 diccionarios: sigma1, sigma2, eps1, eps2
+        """
+        sigma1_map = {node.id: [] for node in nodes}
+        sigma2_map = {node.id: [] for node in nodes}
+        eps1_map = {node.id: [] for node in nodes}
+        eps2_map = {node.id: [] for node in nodes}
 
+        for elem in elements:
+            σ = elem.get_stress(u_global)
+            ε = elem.get_strain(u_global)
 
+            σx, σy, τxy = σ
+            εx, εy, γxy = ε
 
+            # Esfuerzos principales
+            σ_avg = 0.5 * (σx + σy)
+            Rσ = np.sqrt(((σx - σy) / 2)**2 + τxy**2)
+            σ1, σ2 = σ_avg + Rσ, σ_avg - Rσ
 
+            # Deformaciones principales
+            ε_avg = 0.5 * (εx + εy)
+            Rε = np.sqrt(((εx - εy) / 2)**2 + (γxy / 2)**2)
+            ε1, ε2 = ε_avg + Rε, ε_avg - Rε
 
+            for node in elem.node_list:
+                sigma1_map[node.id].append(σ1)
+                sigma2_map[node.id].append(σ2)
+                eps1_map[node.id].append(ε1)
+                eps2_map[node.id].append(ε2)
 
+        # Promediar por nodo
+        sigma1 = {nid: np.mean(vals) for nid, vals in sigma1_map.items()}
+        sigma2 = {nid: np.mean(vals) for nid, vals in sigma2_map.items()}
+        eps1 = {nid: np.mean(vals) for nid, vals in eps1_map.items()}
+        eps2 = {nid: np.mean(vals) for nid, vals in eps2_map.items()}
+
+        return sigma1, sigma2, eps1, eps2
+    
+    def plot_principal_fields(nodes, elements, u_global, title_prefix=title):
+        """
+        Genera 4 gráficos: σ1, σ2, ε1, ε2.
+        """
+        sigma1, sigma2, eps1, eps2 = compute_nodal_principal_fields(nodes, elements, u_global)
+
+        plot_scalar_field(nodes, elements, sigma1, r"$\sigma_1$ (Pa)", f"{title_prefix} - sigma_1")
+        plot_scalar_field(nodes, elements, sigma2, r"$\sigma_2$ (Pa)", f"{title_prefix} - sigma_2")
+        plot_scalar_field(nodes, elements, eps1, r"$\varepsilon_1$", f"{title_prefix} - epsilon_1")
+        plot_scalar_field(nodes, elements, eps2, r"$\varepsilon_2$", f"{title_prefix} - epsilon_2")
+
+    plot_principal_fields(estructure.nodes, estructure.elements, estructure.u_global, title_prefix=title)
 
 if __name__ == "__main__":
     title = 'Case a'
-    main(title, self_weight=False, point_force=True, distribuited_force = False, def_scale = 0.5, force_scale=0.05, reaction_scale = 1.5e-2)
+    main(title, self_weight=False, point_force=True, distribuited_force = False, def_scale = 0.1, force_scale=0.05, reaction_scale = 1.5e-2)
 
     title = 'Case b'
-    main(title, self_weight=False, point_force=False, distribuited_force = True, def_scale = 0.5, force_scale=0.2, reaction_scale = 1.5e-2)
+    main(title, self_weight=False, point_force=False, distribuited_force = True, def_scale = 0.1, force_scale=0.2, reaction_scale = 1.5e-2)
 
     title = 'Case c'
-    main(title, self_weight=True,  point_force=False, distribuited_force = True, def_scale = 0.5, force_scale=0.2, reaction_scale = 1.5e-2)
+    main(title, self_weight=True,  point_force=False, distribuited_force = True, def_scale = 0.1, force_scale=0.2, reaction_scale = 1.5e-2)
 
     title = 'Case d'
     main(title, self_weight=True,  point_force=False, distribuited_force = False, def_scale = 1000, force_scale=10000, reaction_scale = 100)
