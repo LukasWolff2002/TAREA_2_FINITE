@@ -234,7 +234,7 @@ def compute_nodal_von_mises(elements, u_global):
 # ===============
 # Función principal
 # ===============
-def main(title, self_weight=False, distribuited_force = False, def_scale=1, force_scale=1e-2, reaction_scale=1e-2):
+def main(title, self_weight=False, point_force=False, distribuited_force = False, def_scale=1, force_scale=1e-2, reaction_scale=1e-2):
     input_file = "ENTREGA_6/llave.geo"
     output_file = "ENTREGA_6/malla.msh"
     lc = 5
@@ -249,6 +249,25 @@ def main(title, self_weight=False, distribuited_force = False, def_scale=1, forc
     plot_all_elements(elements, title)
 
     estructure = Solve(nodes, elements)
+
+    if point_force:
+        nodos_fuerza = grupos["Fuerza"]
+
+        nodo = ''
+        for i in range(len(nodos_fuerza)):
+            if i == 0:
+                nodo = nodos_fuerza[i]
+
+            else:
+                if nodos_fuerza[i].x > nodo.x:
+                    nodo = nodos_fuerza[i]
+
+        #Aplico una fuerza a ese nodo
+        dof = nodo.id * 2
+        estructure.apply_force(dof, -q)
+
+        
+            
 
     if distribuited_force:
         nodos_fuerza = grupos["Fuerza"]
@@ -413,12 +432,15 @@ def main(title, self_weight=False, distribuited_force = False, def_scale=1, forc
 
 
 if __name__ == "__main__":
+    title = 'Case a'
+    main(title, self_weight=False, point_force=True, distribuited_force = False, def_scale = 0.5, force_scale=0.05, reaction_scale = 1.5e-2)
+
     title = 'Case b'
-    main(title, self_weight=False, distribuited_force = True, def_scale = 0.5, force_scale=0.2, reaction_scale = 1.5e-2)
+    main(title, self_weight=False, point_force=False, distribuited_force = True, def_scale = 0.5, force_scale=0.2, reaction_scale = 1.5e-2)
 
     title = 'Case c'
-    main(title, self_weight=True, distribuited_force = True, def_scale = 0.5, force_scale=0.2, reaction_scale = 1.5e-2)
+    main(title, self_weight=True,  point_force=False, distribuited_force = True, def_scale = 0.5, force_scale=0.2, reaction_scale = 1.5e-2)
 
     title = 'Case d'
-    main(title, self_weight=True, distribuited_force = False, def_scale = 1000, force_scale=10000, reaction_scale = 100)
+    main(title, self_weight=True,  point_force=False, distribuited_force = False, def_scale = 1000, force_scale=10000, reaction_scale = 100)
 
