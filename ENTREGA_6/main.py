@@ -418,3 +418,7 @@ if __name__ == "__main__":
 
     title = 'Case c'
     main(title, self_weight=True, distribuited_force = True, def_scale = 0.5, force_scale=0.2, reaction_scale = 1.5e-2)
+
+    title = 'Case d'
+    main(title, self_weight=True, distribuited_force = False, def_scale = 1000, force_scale=10000, reaction_scale = 100)
+
