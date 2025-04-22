@@ -9,7 +9,9 @@ class Node:
         self.x = x
         self.y = y
         if dofs is None:
-            self.dofs = np.array([id * 2, id * 2 + 1])
+            self.dofs = np.array([(id * 2)-1, id * 2 ])
+            
+
         else:
             self.dofs = np.array(dofs)
         self.restrain = np.array(restrain)

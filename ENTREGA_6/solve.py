@@ -6,10 +6,10 @@ class Solve:
 
            
         self.elements = elements
-        self.ndof = len(nodes) * 2  # 2 DOFs por nodo
-        self.K_global = np.zeros((self.ndof, self.ndof))
-        self.f_global = np.zeros((self.ndof, 1))
-        self.u_global = np.zeros((self.ndof, 1))
+        self.ndof = len(nodes) * 2   # 2 DOFs por nodo
+        self.K_global = np.zeros((self.ndof+1, self.ndof+1))
+        self.f_global = np.zeros((self.ndof+1, 1))
+        self.u_global = np.zeros((self.ndof+1, 1))
 
     def assemble(self):
         for elem in self.elements:
@@ -26,9 +26,18 @@ class Solve:
         self.f_global += force_vector.reshape(-1, 1)
 
     def apply_boundary_conditions(self):
-        restrain_map = np.concatenate([n.restrain for n in self.nodes])
-        self.free_dofs = np.where(restrain_map == 0)[0]
-        self.fixed_dofs = np.where(restrain_map == 1)[0]
+        self.fixed_dofs = []
+        self.free_dofs = []
+
+        for node in self.nodes:
+            for dof_val, dof_idx in zip(node.restrain, node.dofs):
+                if dof_val == 1:
+                    self.fixed_dofs.append(dof_idx)
+                else:
+                    self.free_dofs.append(dof_idx)
+
+        self.fixed_dofs = np.array(self.fixed_dofs)
+        self.free_dofs = np.array(self.free_dofs)
 
         print("N° de DOFs libres:", len(self.free_dofs))
         print("N° de DOFs fijos:", len(self.fixed_dofs))
@@ -52,10 +61,24 @@ class Solve:
 
 
     def solve(self):
+
         self.assemble()
 
         self.apply_boundary_conditions()
-        self.u_global = np.linalg.solve(self.K_global, self.f_global)
+
+        # Detectar DOFs realmente usados
+        used_dofs = sorted(set(dof for node in self.nodes for dof in node.dofs))
+
+        # Submatrices compactas
+        K_reduced = self.K_global[np.ix_(used_dofs, used_dofs)]
+        f_reduced = self.f_global[used_dofs]
+
+        # Resolver sistema reducido
+        u_reduced = np.linalg.solve(K_reduced, f_reduced)
+
+        # Armar solución global
+        self.u_global = np.zeros_like(self.f_global)
+        self.u_global[used_dofs] = u_reduced
         return self.u_global
 
     def get_displacement_at_node(self, node_id):
