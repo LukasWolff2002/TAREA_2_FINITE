@@ -154,3 +154,42 @@ class CST:
         plt.title(f'CST Element {self.element_tag}')
         plt.grid(True)
         plt.show()
+
+    def von_mises_stress(self, u_global):
+        """
+        Calcula la tensión de Von Mises en el centroide del elemento.
+        """
+        stress = self.get_stress(u_global)  # [σxx, σyy, τxy]
+        σx, σy, τxy = stress
+        σvm = np.sqrt(σx**2 - σx*σy + σy**2 + 3*τxy**2)
+        return σvm
+    
+    def principal_stresses(self, u_global):
+        """
+        Calcula los esfuerzos principales σ1 y σ2 en el centroide del elemento.
+        """
+        σ = self.get_stress(u_global)
+        σx, σy, τxy = σ
+
+        σ_avg = 0.5 * (σx + σy)
+        R = np.sqrt(((σx - σy) / 2)**2 + τxy**2)
+
+        σ1 = σ_avg + R
+        σ2 = σ_avg - R
+        return σ1, σ2
+    
+    def sigma_3(self, u_global):
+        """
+        Calcula el esfuerzo σ3 fuera del plano (z) para estado plano de deformaciones.
+        Retorna 0 si se asume estado plano de tensiones.
+        """
+        σ1, σ2 = self.principal_stresses(u_global)
+        if hasattr(self.section, 'plane_strain') and self.section.plane_strain:
+            ν = self.section.poisson
+            return ν * (σ1 + σ2)
+        else:
+            return 0.0  # plano de tensiones
+
+
+    
+    

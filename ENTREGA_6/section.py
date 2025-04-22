@@ -1,31 +1,22 @@
 import numpy as np
 
 class Section:
-    def __init__(self, thickness, E, nu, type='planeStress'):
+    def __init__(self, thickness, Ex, Ey, nuxy, Gxy):
         self.thickness = thickness
-        self.E = E
-        self.nu = nu
-        self.type = type
-        self.D = self._compute_D()
+        self.Ex = Ex
+        self.Ey = Ey
+        self.nuxy = nuxy
+        self.Gxy = Gxy
+        self.D = self._compute_D_orthotropic()
 
-    def _compute_D(self):
-        E, nu = self.E, self.nu
-        
-        if isinstance(E, np.ndarray):
-            return E
-        
-        if self.type == 'planeStress':
-            return (E / (1 - nu**2)) * np.array([
-                [1, nu, 0],
-                [nu, 1, 0],
-                [0, 0, (1 - nu) / 2]
-            ])
-        elif self.type == 'planeStrain':
-            coef = E / ((1 + nu)*(1 - 2*nu))
-            return coef * np.array([
-                [1 - nu, nu, 0],
-                [nu, 1 - nu, 0],
-                [0, 0, (1 - 2*nu) / 2]
-            ])
-        else:
-            raise ValueError(f"Invalid type: {self.type}")
+    def _compute_D_orthotropic(self):
+        Ex, Ey, nuxy, Gxy = self.Ex, self.Ey, self.nuxy, self.Gxy
+        nuyx = nuxy * Ey / Ex
+        denom = 1 - nuxy * nuyx
+        return np.array([
+            [Ex / denom, nuyx * Ey / denom, 0],
+            [nuxy * Ex / denom, Ey / denom, 0],
+            [0, 0, Gxy]
+        ])
+
+    

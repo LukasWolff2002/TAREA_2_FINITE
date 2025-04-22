@@ -64,6 +64,10 @@ class Solve:
 
         self.assemble()
 
+        # Guardar copias originales para calcular reacciones después
+        self.K_original = self.K_global.copy()
+        self.f_original = self.f_global.copy()
+
         self.apply_boundary_conditions()
 
         # Detectar DOFs realmente usados
@@ -92,3 +96,31 @@ class Solve:
         for i, node in enumerate(self.nodes):
             ux, uy = self.get_displacement_at_node(node.id)
             print(f"Nodo {node.id}: ux = {ux:.4e} mm, uy = {uy:.4e} mm")
+
+    def compute_reactions(self):
+        """
+        Calcula las reacciones en los DOFs restringidos usando la matriz original.
+        Guarda los resultados en self.reactions.
+        """
+        # Usar las matrices antes de aplicar las condiciones de borde
+        R_total = self.K_original @ self.u_global - self.f_original
+
+        self.reactions = np.zeros_like(self.f_global)
+        self.reactions[self.fixed_dofs] = R_total[self.fixed_dofs]
+
+        print("\n🔧 Reacciones en DOFs restringidos:")
+        for node in self.nodes:
+            for dof_val, dof_idx in zip(node.restrain, node.dofs):
+                if dof_val == 1:
+                    rxn = float(self.reactions[dof_idx])
+                    dof_name = "ux" if dof_idx % 2 == 1 else "uy"
+                    print(f"Nodo {node.id} → DOF {dof_idx} ({dof_name}): reacción = {rxn:.4e} N")
+
+        return self.reactions
+    
+
+
+
+
+
+
