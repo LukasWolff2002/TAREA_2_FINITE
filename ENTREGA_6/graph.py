@@ -315,7 +315,7 @@ def plot_von_mises_field(nodes, elements, vm_nodal_dict, title, cmap='plasma'):
     fig, ax = plt.subplots(figsize=(fixed_width, height))
 
     tcf = ax.tricontourf(triang, vms, levels=20, cmap=cmap)
-    ax.triplot(triang, color='gray', linewidth=0.5)
+    #ax.triplot(triang, color='gray', linewidth=0.5)
     cbar = fig.colorbar(tcf, ax=ax)
     cbar.set_label("Tensión de Von Mises (Pa)")
 
