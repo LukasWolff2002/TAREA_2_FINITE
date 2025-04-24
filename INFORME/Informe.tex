@@ -192,6 +192,47 @@ The analysis also includes an optimization study to minimize the maximum princip
 
 \newpage
 
+\section{Theoretical background}
+
+\subsection{Finite Element Method (FEM)}
+
+The Finite Element Method (FEM) is a numerical technique used to solve complex engineering problems. It involves dividing a large system into smaller and simpler parts called finite elements. The behavior of each element is described by a set of equations, and the overall response of the system is obtained by assembling these equations. The method used in this report is the CST based model.
+
+\subsection{CST elements}
+
+The CST (Constant Strain Triangle) is a 2D, three-node finite element used for plane stress/strain problems.  
+It assumes linear displacement fields, producing constant strain and stress within each element. The CST element is defined by three nodes, each with two degrees of freedom (DOF) corresponding to the in-plane displacements. The element stiffness matrix is derived from the shape functions and material properties, allowing for the calculation of nodal displacements and internal forces.
+
+\subsection{Plane stress assumption}
+
+This condition applies to thin structures where the stress components perpendicular to the plane are negligible. Mathematically, this means $\sigma_z = \tau_{xz} = \tau_{yz} = 0$. The dominant stress components are $\sigma_{xx}$, $\sigma_{yy}$, and $\sigma_{xy}$. This assumption is typically valid in thin plates or sheets subjected to in-plane loading and is commonly used in finite element analysis (FEA) with 2D CST elements under plane stress conditions.
+
+\subsection{Plane strain assumption}
+
+This assumption is used for long or thick bodies where deformation in one direction (usually the z-axis) is constrained. In this case, the strain components are $\varepsilon_z = \gamma_{xz} = \gamma_{yz} = 0$, although $\sigma_z$ can be non-zero. This is applicable to structures such as tunnels, dams, and thick-walled pressure vessels. All in-plane stress components remain active, and a different constitutive matrix $\mathbf{D}$ is used compared to the plane stress condition.
+
+
+
+
+\newpage
+
+\section{Materials for the model}
+
+For this asignment, a wrech was design using the GMESH \textit{software}. The wrench was designed to be 3D printed, and the material used was PLA. 
+
+This material is a thermoplastic polymer that is widley used in 3D printing due to its mechanical properties. Moreover, depending on the printing orientation, fill density and extrusion temperature, the mechanical properties of PLA can vary significantly. For this analysis, the following properties were used:
+
+\begin{itemize}
+  \item Young's modulus: $3.5 \times 10^9 Pa$
+  \item Poisson's ratio: 0.36
+  \item Tensile Yield strength: $50 \times 10^6 Pa $
+  \item Density: $1.252 \times 10^3 kg/m^3$
+\end{itemize}
+
+These values were chosen based on the standard levels used in other experiences. CITAR PAPER
+
+\newpage
+
 \section{Convergencia del modelo}
 
 Graficos de referencia inicial:
