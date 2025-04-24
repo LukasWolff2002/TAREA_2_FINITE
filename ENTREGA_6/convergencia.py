@@ -83,7 +83,7 @@ def make_sections(grupos):
 
     # Propiedades del material (ortotrópico PLA impreso)
     for group in thickness:
-        sections[group] = Section(thickness[group], Ex=3000, Ey=1200, nuxy=0.35, Gxy=500)
+        sections[group] = Section(thickness[group], E=3500, nu=0.36)
 
     # Diccionario global de nodos para búsqueda por ID
     nodes_dict = {}
@@ -273,7 +273,7 @@ def main(lc, title, self_weight=False, point_force=False, distribuited_force = F
         apply_distributed_force(nodos_fuerza, fuerza_total_y=q, estructura=estructure)
 
     # Aplicar peso propio
-    rho = 1.2 #densidad
+    rho = 1.252 #densidad
 
     if self_weight:
         # Aplicar peso propio a los elementos

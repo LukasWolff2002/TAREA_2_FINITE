@@ -1,6 +1,12 @@
 import matplotlib.pyplot as plt
 import matplotlib.tri as mtri
 import numpy as np
+import os
+import re
+
+def clean_filename(text):
+    """Convierte un string en nombre de archivo válido eliminando LaTeX y símbolos especiales."""
+    return re.sub(r'[^\w\-_. ]', '', text.replace('$', '').replace('\\', '').replace('{', '').replace('}', ''))
 
 def plot_all_elements(elements, title, show_ids=True):
     all_x = []
@@ -330,3 +336,187 @@ def plot_von_mises_field(nodes, elements, vm_nodal_dict, title, cmap='plasma'):
     # Guardar imagen recortada y centrada
     fig.savefig(f"INFORME/GRAFICOS/{title}_von_mises.png", dpi=300, bbox_inches='tight')
     plt.close()
+
+def compute_nodal_principal_fields(nodes, elements, u_global):
+    """
+    Calcula los esfuerzos y deformaciones principales σ1, σ2, ε1, ε2 por nodo.
+    Devuelve 4 diccionarios: sigma1, sigma2, eps1, eps2
+    """
+    sigma1_map = {node.id: [] for node in nodes}
+    sigma2_map = {node.id: [] for node in nodes}
+    eps1_map = {node.id: [] for node in nodes}
+    eps2_map = {node.id: [] for node in nodes}
+
+    for elem in elements:
+        σ = elem.get_stress(u_global)
+        ε = elem.get_strain(u_global)
+
+        σx, σy, τxy = σ
+        εx, εy, γxy = ε
+
+        # Esfuerzos principales
+        σ_avg = 0.5 * (σx + σy)
+        Rσ = np.sqrt(((σx - σy) / 2)**2 + τxy**2)
+        σ1, σ2 = σ_avg + Rσ, σ_avg - Rσ
+
+        # Deformaciones principales
+        ε_avg = 0.5 * (εx + εy)
+        Rε = np.sqrt(((εx - εy) / 2)**2 + (γxy / 2)**2)
+        ε1, ε2 = ε_avg + Rε, ε_avg - Rε
+
+        for node in elem.node_list:
+            sigma1_map[node.id].append(σ1)
+            sigma2_map[node.id].append(σ2)
+            eps1_map[node.id].append(ε1)
+            eps2_map[node.id].append(ε2)
+
+    # Promediar por nodo
+    sigma1 = {nid: np.mean(vals) for nid, vals in sigma1_map.items()}
+    sigma2 = {nid: np.mean(vals) for nid, vals in sigma2_map.items()}
+    eps1 = {nid: np.mean(vals) for nid, vals in eps1_map.items()}
+    eps2 = {nid: np.mean(vals) for nid, vals in eps2_map.items()}
+
+    return sigma1, sigma2, eps1, eps2
+
+def plot_all_scalar_fields_separately(nodes, elements, nodal_fields, title_prefix):
+    """
+    Genera 6 gráficos individuales para: σxx, σyy, τxy, εxx, εyy, γxy
+    """
+    σxx, σyy, τxy, εxx, εyy, γxy = {}, {}, {}, {}, {}, {}
+
+    for node_id, (sigma, epsilon) in nodal_fields.items():
+        σxx[node_id] = sigma[0]
+        σyy[node_id] = sigma[1]
+        τxy[node_id] = sigma[2]
+        εxx[node_id] = epsilon[0]
+        εyy[node_id] = epsilon[1]
+        γxy[node_id] = epsilon[2]
+
+    plot_scalar_field(nodes, elements, σxx, r"$\sigma_{xx}$ (Pa)", f"{title_prefix} - sigma_xx")
+    plot_scalar_field(nodes, elements, σyy, r"$\sigma_{yy}$ (Pa)", f"{title_prefix} - sigma_yy")
+    plot_scalar_field(nodes, elements, τxy, r"$\tau_{xy}$ (Pa)", f"{title_prefix} - tau_xy")
+    plot_scalar_field(nodes, elements, εxx, r"$\varepsilon_{xx}$", f"{title_prefix} - epsilon_xx")
+    plot_scalar_field(nodes, elements, εyy, r"$\varepsilon_{yy}$", f"{title_prefix} - epsilon_yy")
+    plot_scalar_field(nodes, elements, γxy, r"$\gamma_{xy}$", f"{title_prefix} - gamma_xy")
+
+def plot_scalar_field(nodes, elements, nodal_values, field_title, filename_prefix, cmap='plasma'):
+    """
+    Grafica un campo escalar interpolado sobre la malla de elementos.
+    """
+    node_id_to_index = {node.id: i for i, node in enumerate(nodes)}
+    xs = [node.x for node in nodes]
+    ys = [node.y for node in nodes]
+
+    # Triángulos de elementos
+    triangles = [
+        [node_id_to_index[n.id] for n in elem.node_list]
+        for elem in elements
+    ]
+
+    # Valores del campo escalar por nodo
+    values = np.zeros(len(nodes))
+    for node in nodes:
+        values[node_id_to_index[node.id]] = nodal_values[node.id]
+
+    # Márgenes para recorte automático
+    x_min, x_max = min(xs), max(xs)
+    y_min, y_max = min(ys), max(ys)
+    x_margin = (x_max - x_min) * 0.05
+    y_margin = (y_max - y_min) * 0.05
+
+    x_range = (x_max - x_min) + 2 * x_margin
+    y_range = (y_max - y_min) + 2 * y_margin
+
+    fixed_width = 8  # en pulgadas
+    aspect_ratio = y_range / x_range
+    height = fixed_width * aspect_ratio
+
+    fig, ax = plt.subplots(figsize=(fixed_width, height))
+    triang = mtri.Triangulation(xs, ys, triangles)
+
+    tcf = ax.tricontourf(triang, values, levels=20, cmap=cmap)
+    cbar = fig.colorbar(tcf, ax=ax)
+    cbar.set_label(field_title)
+
+    ax.set_xlim(x_min - x_margin, x_max + x_margin)
+    ax.set_ylim(y_min - y_margin, y_max + y_margin)
+    ax.set_aspect('equal', adjustable='box')
+    ax.set_title(field_title)
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.grid(True)
+
+    # Guardar imagen recortada
+    os.makedirs("INFORME/GRAFICOS", exist_ok=True)
+    filename = f"INFORME/GRAFICOS/{clean_filename(filename_prefix)}.png"
+    fig.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close()
+
+def plot_principal_fields(nodes, elements, u_global, title_prefix):
+        """
+        Genera 4 gráficos: σ1, σ2, ε1, ε2.
+        """
+        sigma1, sigma2, eps1, eps2 = compute_nodal_principal_fields(nodes, elements, u_global)
+
+        plot_scalar_field(nodes, elements, sigma1, r"$\sigma_1$ (Pa)", f"{title_prefix} - sigma_1")
+        plot_scalar_field(nodes, elements, sigma2, r"$\sigma_2$ (Pa)", f"{title_prefix} - sigma_2")
+        plot_scalar_field(nodes, elements, eps1, r"$\varepsilon_1$", f"{title_prefix} - epsilon_1")
+        plot_scalar_field(nodes, elements, eps2, r"$\varepsilon_2$", f"{title_prefix} - epsilon_2")
+
+import matplotlib.tri as mtri
+import matplotlib.pyplot as plt
+import numpy as np
+
+def plot_elements_by_thickness(elements, title="espesores", cmap='viridis'):
+    """
+    Dibuja y guarda una figura coloreando los elementos según el espesor de su sección,
+    ajustando automáticamente el alto para mantener proporciones.
+    """
+    node_ids = {}
+    xs, ys = [], []
+    triangles = []
+    thicknesses = []
+
+    counter = 0
+    for elem in elements:
+        triangle = []
+        for node in elem.node_list:
+            if node.id not in node_ids:
+                node_ids[node.id] = counter
+                xs.append(node.x)
+                ys.append(node.y)
+                counter += 1
+            triangle.append(node_ids[node.id])
+        triangles.append(triangle)
+        thicknesses.append(elem.section.thickness)
+
+    triang = mtri.Triangulation(xs, ys, triangles)
+
+    # Cálculo de límites y dimensiones
+    x_min, x_max = min(xs), max(xs)
+    y_min, y_max = min(ys), max(ys)
+    x_margin = (x_max - x_min) * 0.05
+    y_margin = (y_max - y_min) * 0.05
+
+    x_range = (x_max - x_min) + 2 * x_margin
+    y_range = (y_max - y_min) + 2 * y_margin
+
+    fixed_width = 8
+    aspect_ratio = y_range / x_range
+    height = fixed_width * aspect_ratio
+
+    fig, ax = plt.subplots(figsize=(fixed_width, height))
+    tpc = ax.tripcolor(triang, facecolors=thicknesses, edgecolors='k', cmap=cmap)
+    cbar = plt.colorbar(tpc, ax=ax, label="Espesor (mm)")
+    ax.set_title("Distribución de Espesores por Elemento")
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.set_xlim(x_min - x_margin, x_max + x_margin)
+    ax.set_ylim(y_min - y_margin, y_max + y_margin)
+    ax.set_aspect('equal', adjustable='box')
+    ax.grid(True)
+
+    plt.tight_layout()
+    plt.savefig(f"INFORME/GRAFICOS/{title}_espesores.png", dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"✅ Gráfico guardado como INFORME/GRAFICOS/{title}_espesores.png")
