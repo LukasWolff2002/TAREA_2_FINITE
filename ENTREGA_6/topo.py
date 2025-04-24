@@ -245,6 +245,79 @@ def export_structure_to_3d_stl_symmetric(elements, filename="modelo_optimizado_3
     mesh.write(filename)
     print(f"✅ STL 3D simétrico exportado: {filename}")
 
+def export_structure_to_3d_stl_symmetric_smoothed(elements, filename="modelo_optimizado_3d_sym_suavizado.stl", smooth_steps=10, alpha=0.5):
+    """
+    Exporta un STL 3D extruyendo los triángulos con espesor ±t/2 y suaviza la malla (sin cambiar conectividad).
+    Aplica suavizado Laplaciano a los vértices para redondear visualmente el cuerpo.
+    """
+    import numpy as np
+    import meshio
+    from collections import defaultdict
+
+    vertices = []
+    cells = []
+    vertex_map = {}  # (x, y) → index
+    neighbors = defaultdict(set)
+
+    for elem in elements:
+        coords = elem.get_xy_matrix()
+        t = elem.section.thickness
+        z_bot = -t / 2
+        z_top = +t / 2
+
+        local_indices = []
+
+        for (x, y) in coords:
+            key = (x, y)
+            if key not in vertex_map:
+                vertex_map[key] = len(vertices) // 2
+                vertices.append([x, y, z_bot])
+                vertices.append([x, y, z_top])
+            local_indices.append(vertex_map[key])
+
+        a, b, c = local_indices
+        bot = [2*a, 2*b, 2*c]
+        top = [2*c+1, 2*b+1, 2*a+1]  # reversed
+
+        cells.append(bot)
+        cells.append(top)
+
+        # Caras laterales
+        for i in range(3):
+            j = (i + 1) % 3
+            v0 = 2 * local_indices[i]
+            v1 = 2 * local_indices[j]
+            v2 = 2 * local_indices[j] + 1
+            v3 = 2 * local_indices[i] + 1
+            cells.append([v0, v1, v2])
+            cells.append([v0, v2, v3])
+
+            # Guardar vecinos en 2D
+            neighbors[local_indices[i]].add(local_indices[j])
+            neighbors[local_indices[j]].add(local_indices[i])
+
+    # Suavizado Laplaciano sobre XY (manteniendo Z fija por plano)
+    verts_array = np.array(vertices)
+    for _ in range(smooth_steps):
+        new_xy = verts_array[:, :2].copy()
+        for idx in vertex_map.values():
+            nbrs = list(neighbors[idx])
+            if not nbrs:
+                continue
+            avg = np.mean([verts_array[2*n][:2] for n in nbrs], axis=0)
+            new_xy[2*idx] = (1 - alpha) * new_xy[2*idx] + alpha * avg
+            new_xy[2*idx+1] = (1 - alpha) * new_xy[2*idx+1] + alpha * avg
+        verts_array[:, :2] = new_xy
+
+    # Exportar STL
+    mesh = meshio.Mesh(
+        points=verts_array,
+        cells=[("triangle", np.array(cells))]
+    )
+    mesh.write(filename)
+    print(f"✅ STL 3D suavizado exportado: {filename}")
+
+
 
 
 
@@ -279,7 +352,8 @@ def apply_self_weight(elements, rho, estructure):
         estructure.apply_force(dof_index=dof_b, value=F_interna[3])
         estructure.apply_force(dof_index=dof_c, value=F_interna[5])
 
-    print(f"Peso total de la estructura: {P:.3f} N")
+    print(f"Peso total de la estructura: {P:.5f} N")
+    return P
     
 def compute_nodal_von_mises(elements, u_global):
         """
@@ -322,20 +396,56 @@ def compute_nodal_stress_strain(nodes, elements, u_global):
 
     return result  # node.id: (σ_vec, ε_vec)
 
-def optimize_topology_iterative_n_extremes(grupos, elements, nodes, rho, estructure,
+def optimize_topology_iterative_n_extremes(P, grupos, elements, nodes, rho, estructure,
                                            num_iterations=5, num_elements=2,
                                            delta_t=0.2, t_min=0.2, t_max=10.0):
     """
-    Optimización topológica iterativa con elementos colindantes:
-    - Aumenta espesor a los N elementos con mayor σ_vm (+Δt)
-    - Disminuye espesor a los N elementos con menor σ_vm (-Δt)
-    - También modifica sus colindantes (+/- Δt/2)
+    Optimización topológica iterativa con propagación ultra-suavizada:
+    - Aplica cambios principales a los N elementos extremos
+    - Propaga ajustes suaves a través de una función Gaussiana acumulativa
     """
-    q = 294  # fuerza distribuida
+    import numpy as np
+    import math
+    from collections import defaultdict
+
+    q = 294
     g = 9.81
+
+    def gaussian_weight(level, sigma=2.0):
+        return math.exp(-0.5 * (level / sigma) ** 2)
+
+    def find_neighbors_recursive(start_indices, levels):
+        neighbor_levels = defaultdict(set)
+        current = set(start_indices)
+        visited = set(start_indices)
+
+        for level in range(1, levels + 1):
+            next_neighbors = set()
+            target_nodes = set(n for idx in current for n in elements[idx].node_list)
+
+            for i, elem in enumerate(elements):
+                if i in visited:
+                    continue
+                if any(n in target_nodes for n in elem.node_list):
+                    neighbor_levels[level].add(i)
+                    next_neighbors.add(i)
+
+            visited.update(next_neighbors)
+            current = next_neighbors
+
+        return neighbor_levels
+
+    def update_element_thickness(elem, delta, tag):
+        t_old = elem.section.thickness
+        t_new = np.clip(t_old + delta, t_min, t_max)
+        elem.section = Section(t_new, E=3500, nu=0.36)
+        elem.Ke = elem.get_stiffness_matrix()
+        updated_indices.add(elem.element_tag)
+        #print(f"{tag} → Elem {elem.element_tag} | t: {t_old:.3f} → {t_new:.3f}")
 
     for it in range(num_iterations):
         print(f"\n🔁 Iteración {it+1}/{num_iterations}")
+        print(f"El peso original es: {P:.5f} N")
 
         estructure = Solve(nodes, elements)
         apply_self_weight(elements, rho, estructure)
@@ -345,58 +455,154 @@ def optimize_topology_iterative_n_extremes(grupos, elements, nodes, rho, estruct
         for node in estructure.nodes:
             node.structure = estructure
 
-        # von Mises stress de cada elemento
         von_mises = np.array([elem.von_mises_stress(estructure.u_global) for elem in elements])
         sorted_indices = np.argsort(von_mises)
 
         max_indices = sorted_indices[-num_elements:]
         min_indices = sorted_indices[:num_elements]
 
-        # Set para evitar repetir elementos
         updated_indices = set()
 
-        def update_element_thickness(elem, delta, tag):
-            t_old = elem.section.thickness
-            t_new = np.clip(t_old + delta, t_min, t_max)
-            elem.section = Section(t_new, E=3500, nu=0.36)
-            elem.Ke = elem.get_stiffness_matrix()
-            updated_indices.add(elem.element_tag)
-            print(f"{tag} -> Elem {elem.element_tag} | t: {t_old:.2f} → {t_new:.2f}")
-
-        # 1. Aplicar cambios directos
+        # Aplicar cambio principal
         for idx in max_indices:
             update_element_thickness(elements[idx], +delta_t, "🔺 max")
 
         for idx in min_indices:
             update_element_thickness(elements[idx], -delta_t, "🔻 min")
 
-        # 2. Modificar colindantes con ±delta_t/2
-        def find_neighboring_elements(target_indices):
-            neighbor_set = set()
-            target_nodes = set(n for idx in target_indices for n in elements[idx].node_list)
-            for i, elem in enumerate(elements):
-                if elem.element_tag in updated_indices:
+        # Propagación ultra-suavizada
+        sigma = 2.0
+        levels = 6  # hasta vecinos de 6º orden
+
+        max_neighbors_by_level = find_neighbors_recursive(max_indices, levels)
+        min_neighbors_by_level = find_neighbors_recursive(min_indices, levels)
+
+        for level in range(1, levels + 1):
+            weight = gaussian_weight(level, sigma) * delta_t
+            for idx in max_neighbors_by_level[level]:
+                if elements[idx].element_tag in updated_indices:
                     continue
-                if any(n in target_nodes for n in elem.node_list):
-                    neighbor_set.add(i)
-            return neighbor_set
-
-        # Colindantes de max y min
-        neighbors_max = find_neighboring_elements(max_indices)
-        neighbors_min = find_neighboring_elements(min_indices)
-
-        for idx in neighbors_max:
-            update_element_thickness(elements[idx], +delta_t / 2, "⤴ colindante max")
-
-        for idx in neighbors_min:
-            update_element_thickness(elements[idx], -delta_t / 2, "⤵ colindante min")
+                update_element_thickness(elements[idx], +weight, f"⤴ nivel {level}")
+            for idx in min_neighbors_by_level[level]:
+                if elements[idx].element_tag in updated_indices:
+                    continue
+                update_element_thickness(elements[idx], -weight, f"⤵ nivel {level}")
 
         # Reportar peso
         peso_total = sum(
             (el.area / 100**2) * (el.section.thickness / 100) * rho * g
             for el in elements
         )
-        print(f"⚖️ Peso total aproximado: {peso_total:.3f} N")
+        print(f"⚖️ Peso total aproximado: {peso_total:.5f} N")
+
+                # Suavizar reducción de masa si el peso excede
+        if peso_total > P:
+            exceso = peso_total - P
+            print(f"❌ Exceso de masa: {exceso:.3f} N — se reducirá espesor suavemente")
+
+            sigma_red = 1.0
+            levels_red = 6
+            reduction_step = delta_t / 2
+            weight_by_level = {
+                level: gaussian_weight(level, sigma_red) * reduction_step
+                for level in range(1, levels_red + 1)
+            }
+
+            still_exceeds = True
+            temp_updated = set(updated_indices)
+
+            max_mass_reduction_steps = 100
+
+            all_reducible_candidates = [
+                    (i, von_mises[i])
+                    for i in range(len(elements))
+                    if elements[i].section.thickness > t_min+0.2 and i not in temp_updated
+                ]
+
+            for reduction_iter in range(max_mass_reduction_steps):
+                print(f"\n🔁 Paso de reducción #{reduction_iter + 1} — Peso actual: {peso_total:.3f} N")
+
+                # 🔁 Recalcular esfuerzos actualizados después de cambios de espesor
+                estructure = Solve(nodes, elements)
+                apply_self_weight(elements, rho, estructure)
+                apply_distributed_force(grupos["Fuerza"], fuerza_total_y=q, estructura=estructure)
+                estructure.solve()
+                von_mises = np.array([elem.von_mises_stress(estructure.u_global) for elem in elements])
+
+                # Ordenar todos los candidatos posibles por von Mises (de menor a mayor)
+                
+                sorted_reduction_indices = [i for i, _ in sorted(all_reducible_candidates, key=lambda x: x[1])]
+
+                print(f"   ➤ Candidatos a reducir: {len(sorted_reduction_indices)}")
+
+                # Buscar `num_elements` candidatos con al menos 0.2 mm de margen
+                base_indices = []
+                for i in sorted_reduction_indices:
+                    if elements[i].section.thickness >= t_min + 1:
+                        base_indices.append(i)
+                    if len(base_indices) == num_elements:
+                        break
+
+                # Si no hay suficientes con margen, completar con otros que tengan t > t_min
+                if len(base_indices) < num_elements:
+                    for i in sorted_reduction_indices:
+                        if i in base_indices:
+                            continue
+                        if elements[i].section.thickness > t_min+1:
+                            base_indices.append(i)
+                        if len(base_indices) == num_elements:
+                            break
+
+                # Verificación final
+                if not base_indices:
+                    print("⚠️ No quedan elementos con espesor suficiente para seguir reduciendo masa.")
+                    break
+
+                # Aplicar reducción
+                for base_idx in base_indices:
+                    elem = elements[base_idx]
+                    t_old = elem.section.thickness
+                    t_new = max(t_old - reduction_step, t_min)
+                    if t_new < t_old:
+                        elem.section = Section(t_new, E=3500, nu=0.36)
+                        elem.Ke = elem.get_stiffness_matrix()
+                        peso_total -= (elem.area / 100**2) * ((t_old - t_new) / 100) * rho * g
+                        temp_updated.add(base_idx)
+
+                    # Reducir vecinos suavemente
+                    neighbors_by_level = find_neighbors_recursive([base_idx], levels_red)
+                    for level, idxs in neighbors_by_level.items():
+                        for idx in idxs:
+                            if idx in temp_updated:
+                                continue
+                            elem_n = elements[idx]
+                            if elem_n.section.thickness <= t_min:
+                                continue
+                            t_old_n = elem_n.section.thickness
+                            t_new_n = max(t_old_n - weight_by_level[level], t_min)
+                            if t_new_n < t_old_n:
+                                elem_n.section = Section(t_new_n, E=3500, nu=0.36)
+                                elem_n.Ke = elem_n.get_stiffness_matrix()
+                                # Recalcular peso total exacto después de todos los cambios
+                                peso_total = sum(
+                                    (el.area / 100**2) * (el.section.thickness / 100) * rho * g
+                                    for el in elements
+                                )
+
+                                temp_updated.add(idx)
+
+                print(f"   ➤ Nuevo peso total: {peso_total:.5f} N")
+
+                if peso_total <= P:
+                    print(f"✅ Peso ajustado suavemente en {reduction_iter + 1} pasos.")
+                    still_exceeds = False
+                    break
+
+            if still_exceeds:
+                print("⚠️ No fue posible ajustar completamente el peso: límite mínimo de espesor alcanzado.")
+
+
+
 
     return estructure
 
@@ -413,7 +619,7 @@ def optimize_topology_iterative_n_extremes(grupos, elements, nodes, rho, estruct
 def main(title, self_weight=False, point_force=False, distribuited_force = False, def_scale=1, force_scale=1e-2, reaction_scale=1e-2):
     input_file = "ENTREGA_6/llave.geo"
     output_file = "ENTREGA_6/malla.msh"
-    lc = 5
+    lc = 2
 
     q = 294 #N
 
@@ -451,7 +657,7 @@ def main(title, self_weight=False, point_force=False, distribuited_force = False
 
     if self_weight:
         # Aplicar peso propio a los elementos
-        apply_self_weight(elements, rho, estructure)
+        P = apply_self_weight(elements, rho, estructure)
 
     f = estructure.f_original if hasattr(estructure, 'f_original') else estructure.f_global
 
@@ -469,16 +675,16 @@ def main(title, self_weight=False, point_force=False, distribuited_force = False
 
     #    optimize_topology_mass_constrained(estructure.elements, rho, delta=0.2)
 
-    estructure = optimize_topology_iterative_n_extremes(
+    estructure = optimize_topology_iterative_n_extremes(P=P,
     grupos=grupos,
     elements=elements,
     nodes=nodes,
     rho=rho,
     estructure=estructure,
-    num_iterations=100,
+    num_iterations=50,
     num_elements=10,        # cambia este valor según qué tan agresiva sea la optimización
     delta_t=0.2,
-    t_min=0.6,
+    t_min=1,
     t_max=10.0
 )
 
