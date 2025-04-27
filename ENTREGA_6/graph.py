@@ -345,6 +345,12 @@ def plot_von_mises_field(nodes, elements, vm_nodal_dict, title, cmap='plasma'):
 
 from matplotlib.colors import BoundaryNorm
 
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.tri as mtri
+from matplotlib.colors import LogNorm
+
 def plot_von_mises_per_element(nodes, elements, vm_nodal_dict, title, cmap='plasma'):
     node_id_to_index = {}
     xs, ys = [], []
@@ -360,9 +366,14 @@ def plot_von_mises_per_element(nodes, elements, vm_nodal_dict, title, cmap='plas
     for elem in elements:
         triangle = [node_id_to_index[n.id] for n in elem.node_list]
         triangles.append(triangle)
-        
-        # Usamos promedio de los nodos para el valor del elemento
+
+        # Usar promedio de los nodos para el valor del elemento
         vms_elem = np.mean([vm_nodal_dict.get(n.id, 0.0) for n in elem.node_list])
+
+        # ⚡ Si el valor es 0 o negativo, reemplazar por pequeño valor positivo
+        if vms_elem <= 0:
+            vms_elem = 1e-6
+
         element_colors.append(vms_elem)
 
     triang = mtri.Triangulation(xs, ys, triangles)
@@ -382,29 +393,38 @@ def plot_von_mises_per_element(nodes, elements, vm_nodal_dict, title, cmap='plas
 
     fig, ax = plt.subplots(figsize=(fixed_width, height))
 
-    # --- Discretizar en 11 colores ---
-    n_colors = 11
+    # --- Escala logarítmica ---
     vmin = min(element_colors)
     vmax = max(element_colors)
-    levels = np.linspace(vmin, vmax, n_colors)
-    norm = BoundaryNorm(boundaries=levels, ncolors=n_colors-1)
 
-    # 🎯 Graficar
-    tpc = ax.tripcolor(triang, facecolors=element_colors, edgecolors='k', cmap=cmap, norm=norm)
+    if vmin <= 0:
+        vmin = min([v for v in element_colors if v > 0], default=1e-6)
 
-    cbar = fig.colorbar(tpc, ax=ax, ticks=levels)
+    norm = LogNorm(vmin=vmin, vmax=vmax)
+
+    # 🎯 Graficar con shading='flat'
+    tpc = ax.tripcolor(
+        triang,
+        facecolors=element_colors,
+        cmap=cmap,
+        norm=norm,
+        edgecolors='k',
+        shading='flat'
+    )
+
+    cbar = fig.colorbar(tpc, ax=ax)
     cbar.set_label("Von Mises Stress (Pa)")
-    cbar.ax.set_yticklabels([f"{lvl:.2e}" for lvl in levels])  # Formato de etiquetas
 
     ax.set_xlim(x_min - x_margin, x_max + x_margin)
     ax.set_ylim(y_min - y_margin, y_max + y_margin)
     ax.set_aspect('equal', adjustable='box')
-    ax.set_title("Von Mises stress per element (11 colors)")
+    ax.set_title("Von Mises stress per element")
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.grid(True)
 
-    fig.savefig(f"INFORME/GRAFICOS/{title}_von_mises_per_element_11_colors.png", dpi=300, bbox_inches='tight')
+    os.makedirs("INFORME/GRAFICOS", exist_ok=True)
+    fig.savefig(f"INFORME/GRAFICOS/{title}_von_mises_per_element.png", dpi=300, bbox_inches='tight')
     plt.close()
 
 
