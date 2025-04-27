@@ -333,19 +333,20 @@ if __name__ == "__main__":
     fig, ax1 = plt.subplots()
 
     # Primer eje Y: Von Mises
-    ax1.set_xlabel('Longitud Característica (LC)')
-    ax1.set_ylabel('Tensión de Von Mises (MPa)', color='tab:red')
-    ax1.set_xscale('log')  # Escala logarítmica en eje X
+    ax1.set_xlabel('Characteristic Length (LC)')
+    ax1.set_ylabel('Von Mises Stress (MPa)', color='tab:red')
+    ax1.set_xscale('log')  # Logarithmic scale on X axis
     ax1.plot(LC, von_mises, color='tab:red', marker='o', label='Von Mises')
     ax1.tick_params(axis='y', labelcolor='tab:red')
 
     # Segundo eje Y: Tiempo
     ax2 = ax1.twinx()
-    ax2.set_ylabel('Tiempo de ejecución (s)', color='tab:blue')
-    ax2.plot(LC, Tiempo, color='tab:blue', marker='s', label='Tiempo')
+    ax2.set_ylabel('Execution Time (s)', color='tab:blue')
+    ax2.plot(LC, Tiempo, color='tab:blue', marker='s', label='Time')
     ax2.tick_params(axis='y', labelcolor='tab:blue')
 
-    plt.title('Convergencia de Von Mises y Tiempo vs LC')
+    plt.title('Convergence of Von Mises Stress and Execution Time vs LC')
     fig.tight_layout()
     plt.grid(True)
-    plt.savefig('INFORME/GRAFICOS/convergencia.png', dpi=300)
+    plt.savefig('INFORME/GRAFICOS/convergence.png', dpi=300)
+
