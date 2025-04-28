@@ -4,6 +4,11 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[spanish]{babel}  % Ajusta el idioma del documento a español.
+\addto\captionsspanish{
+  \renewcommand{\figurename}{Figure}
+  \renewcommand{\tablename}{Table}
+}
+
 \usepackage{tabularx}  % Permite la creación de tablas con ancho ajustable.
 
 \usepackage{caption}
@@ -141,7 +146,7 @@
 %----------------------------------------------------------------------------------------
 \begin{flushright}
   { \textbf{Profesor:}\\
-  Jos+e Antonio Abell\\
+  José Antonio Abell\\
   \textbf{Ayudante:}\\
   Nicolás\\
   \textbf{Alumnos:} \\
@@ -211,6 +216,78 @@ This condition applies to thin structures where the stress components perpendicu
 
 This assumption is used for long or thick bodies where deformation in one direction (usually the z-axis) is constrained. In this case, the strain components are $\varepsilon_z = \gamma_{xz} = \gamma_{yz} = 0$, although $\sigma_z$ can be non-zero. This is applicable to structures such as tunnels, dams, and thick-walled pressure vessels. All in-plane stress components remain active, and a different constitutive matrix $\mathbf{D}$ is used compared to the plane stress condition.
 
+\subsection{Shape functions}
+
+The shape functions are used to interpolate the displacements within the element based on the nodal displacements. For a CST element, the shape functions are defined as:
+
+\begin{equation}
+  N_i(\xi) = \begin{bmatrix}
+  \xi_1 & 0 & \xi_2 & 0 & \xi_3 & 0 \\
+  0 & \xi_1 & 0 & \xi_2 & 0 & \xi_3
+  \end{bmatrix}
+\end{equation}
+
+Where $\xi_1$, $\xi_2$, and $\xi_3$ are the coordinates of the nodes in the local coordinate system. The shape functions are used to relate the nodal displacements to the displacements at any point within the element.
+The shape functions are linear and can be expressed in terms of the local coordinates $\xi$ and $\eta$ as follows:
+\begin{equation}
+  N_1 = \frac{1}{2} (1 - \xi - \eta), \quad N_2 = \frac{1}{2} (1 + \xi), \quad N_3 = \frac{1}{2} (1 + \eta)
+\end{equation}
+
+\subsection{Strain displacement matrix}
+
+The strain displacement matrix relates the nodal displacements to the interal deformation of the element. For a CST element, the strain-displacement matrix $\mathbf{B}$ is defined as:
+
+\begin{equation}
+  B = \begin{bmatrix}
+  \frac{\partial \xi_1}{\partial x} & 0 & \frac{\partial \xi_2}{\partial x} & 0 & \frac{\partial \xi_3}{\partial x} & 0 \\
+  0 & \frac{\partial \xi_1}{\partial y} & 0 & \frac{\partial \xi_2}{\partial y} & 0 & \frac{\partial \xi_3}{\partial y} \\
+  \frac{\partial \xi_1}{\partial y} & \frac{\partial \xi_1}{\partial x} & \frac{\partial \xi_2}{\partial y} & \frac{\partial \xi_2}{\partial x} & \frac{\partial \xi_3}{\partial y} & \frac{\partial \xi_3}{\partial x}
+  \end{bmatrix}
+\end{equation}
+
+This matrix derives the shape functions in order to obtain the internal strain components as follows:
+
+\begin{equation}
+  \begin{bmatrix}
+  \varepsilon_x \\
+  \varepsilon_y \\
+  \gamma_{xy}
+  \end{bmatrix} = \mathbf{B} \begin{bmatrix}
+  u_1 \\
+  u_2 \\
+  u_3
+  \end{bmatrix}
+\end{equation}
+
+Where $\varepsilon_x$ and $\varepsilon_y$ are the normal strains in the x and y directions, respectively, and $\gamma_{xy}$ is the shear strain. The vector of nodal displacements is represented by $u_1$, $u_2$, and $u_3$.
+
+\subsection{Stiffness matrix}
+
+The stiffness matrix is used to calculate the internal forces and displacements ot the element from the nodal displacements. 
+
+\begin{equation}
+  K^{(e)} = \int_{\Omega^{(e)}} B^T E B \, t \, d\Omega^{(e)}
+\end{equation}
+
+Where $K^{(e)}$ is the element stiffness matrix, $E$ is the material's elastic modulus, $t$ is the thickness of the element, and $\Omega^{(e)}$ is the area of the element. The stiffness matrix relates the nodal forces to the nodal displacements as follows:
+
+\begin{equation}
+  \mathbf{F} = \mathbf{K} \mathbf{u}
+\end{equation}
+
+\subsection{Nodal forces vector}
+
+To obtain the nodal forces vector, a body force is applied (self-weight), then the nodal forces vector is calculated as follows:
+
+\begin{equation}
+  f^{(e)} = \int_{\Omega^{(e)}} t \left( N^{(e)} \right)^T b \, d\Omega^{(e)}
+\end{equation}
+
+Where $f^{(e)}$ is the nodal forces vector, $N^{(e)}$ is the shape function matrix, and $b$ is the body force vector. The nodal forces vector relates the body forces to the nodal displacements as follows:
+\begin{equation}
+  \mathbf{F} = \mathbf{K} \mathbf{u} + \mathbf{f}
+\end{equation}
+
 \subsection{Von Mises stress Criterion}
 
 In structural analysis, the Von Mises stress is widley used as a yield and failure crtierion. The Von Mises stress is a scalar value derived from the stress components and provides a singles equivalent stress that can be directly compared to the material's yield strenght.
@@ -241,8 +318,24 @@ These values were chosen based on the standard levels used in other experiences.
 
 \newpage
 
-\section{xd}
+\section{Description of the model}
 
+The model for this assignment was a wrench designed using the GMESH \textit{software}. The purpose of this was to analyze the mechanical behavior of the structure under 3 different cases. 
+
+The first case was a distributed load applied to one end of the wrench, as shown in Figure \ref{caso1}.
+
+The second case was a point load applied to the same end of the first case. The variation from this case to the previous one is considerable, due to the force being adjusted to only one node instead to a list of nodes.
+
+At last, the third case was similar to case 1, but with the addition of a self-weight load. This was done by adding a body force to the model in that same region.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{img/wrench.png}
+  \caption{Wrench model with limited boundaries and regions of particular behavior.}
+  \label{caso1}
+\end{figure}
+
+\include{results}
 \include{preguntas}
 
 \end{document}
