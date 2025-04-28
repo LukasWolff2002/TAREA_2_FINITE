@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.11.16)  27 APR 2025 23:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.11.16)  28 APR 2025 00:17
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -992,7 +992,7 @@ File: LOGO_UNIVERSIDAD.jpg Graphic file (type jpg)
 Package pdftex.def Info: LOGO_UNIVERSIDAD.jpg  used on input line 319.
 (pdftex.def)             Requested size: 110.8946pt x 40.20973pt.
 [5]
-<img/wrench.png, id=154, 584.1825pt x 141.52875pt>
+<img/wrench.png, id=157, 584.1825pt x 141.52875pt>
 File: img/wrench.png Graphic file (type png)
 <use img/wrench.png>
 Package pdftex.def Info: img/wrench.png  used on input line 333.
@@ -1007,12 +1007,12 @@ Package pdftex.def Info: LOGO_UNIVERSIDAD.jpg  used on input line 338.
 \openout2 = `results.aux'.
 
  (results.tex
-<GRAFICOS/Case b_fuerzas.png, id=165, 499.3857pt x 162.1257pt>
+<GRAFICOS/Case b_fuerzas.png, id=168, 499.3857pt x 162.1257pt>
 File: GRAFICOS/Case b_fuerzas.png Graphic file (type png)
 <use GRAFICOS/Case b_fuerzas.png>
 Package pdftex.def Info: GRAFICOS/Case b_fuerzas.png  used on input line 11.
 (pdftex.def)             Requested size: 354.86412pt x 115.20653pt.
-<GRAFICOS/Case b_deformada.png, id=166, 500.5902pt x 176.5797pt>
+<GRAFICOS/Case b_deformada.png, id=169, 500.5902pt x 176.5797pt>
 File: GRAFICOS/Case b_deformada.png Graphic file (type png)
 <use GRAFICOS/Case b_deformada.png>
 Package pdftex.def Info: GRAFICOS/Case b_deformada.png  used on input line 18.
@@ -1026,17 +1026,17 @@ Package pdftex.def Info: LOGO_UNIVERSIDAD.jpg  used on input line 50.
 [7
 
  <./GRAFICOS/Case b_fuerzas.png> <./GRAFICOS/Case b_deformada.png>]
-<GRAFICOS/Case b_von_mises.png, id=177, 483.0045pt x 142.8537pt>
+<GRAFICOS/Case b_von_mises.png, id=180, 483.0045pt x 142.8537pt>
 File: GRAFICOS/Case b_von_mises.png Graphic file (type png)
 <use GRAFICOS/Case b_von_mises.png>
 Package pdftex.def Info: GRAFICOS/Case b_von_mises.png  used on input line 55.
 (pdftex.def)             Requested size: 354.86412pt x 104.95369pt.
-<GRAFICOS/Case a_fuerzas.png, id=180, 499.3857pt x 162.1257pt>
+<GRAFICOS/Case a_fuerzas.png, id=183, 499.3857pt x 162.1257pt>
 File: GRAFICOS/Case a_fuerzas.png Graphic file (type png)
 <use GRAFICOS/Case a_fuerzas.png>
 Package pdftex.def Info: GRAFICOS/Case a_fuerzas.png  used on input line 66.
 (pdftex.def)             Requested size: 354.86412pt x 115.20653pt.
-<GRAFICOS/Case a_deformada.png, id=181, 501.072pt x 182.1204pt>
+<GRAFICOS/Case a_deformada.png, id=184, 501.072pt x 182.1204pt>
 File: GRAFICOS/Case a_deformada.png Graphic file (type png)
 <use GRAFICOS/Case a_deformada.png>
 Package pdftex.def Info: GRAFICOS/Case a_deformada.png  used on input line 73.
@@ -1048,17 +1048,17 @@ File: LOGO_UNIVERSIDAD.jpg Graphic file (type jpg)
 Package pdftex.def Info: LOGO_UNIVERSIDAD.jpg  used on input line 91.
 (pdftex.def)             Requested size: 110.8946pt x 40.20973pt.
 [8 <./GRAFICOS/Case b_von_mises.png> <./GRAFICOS/Case a_fuerzas.png> <./GRAFICOS/Case a_deformada.png>]
-<GRAFICOS/Case a_von_mises.png, id=194, 483.0045pt x 142.8537pt>
+<GRAFICOS/Case a_von_mises.png, id=197, 483.0045pt x 142.8537pt>
 File: GRAFICOS/Case a_von_mises.png Graphic file (type png)
 <use GRAFICOS/Case a_von_mises.png>
 Package pdftex.def Info: GRAFICOS/Case a_von_mises.png  used on input line 111.
 (pdftex.def)             Requested size: 354.86412pt x 104.95369pt.
-<GRAFICOS/Case c_fuerzas.png, id=195, 499.3857pt x 162.1257pt>
+<GRAFICOS/Case c_fuerzas.png, id=198, 499.3857pt x 162.1257pt>
 File: GRAFICOS/Case c_fuerzas.png Graphic file (type png)
 <use GRAFICOS/Case c_fuerzas.png>
 Package pdftex.def Info: GRAFICOS/Case c_fuerzas.png  used on input line 122.
 (pdftex.def)             Requested size: 354.86412pt x 115.20653pt.
-<GRAFICOS/Case c_deformada.png, id=198, 500.5902pt x 176.5797pt>
+<GRAFICOS/Case c_deformada.png, id=201, 500.5902pt x 176.5797pt>
 File: GRAFICOS/Case c_deformada.png Graphic file (type png)
 <use GRAFICOS/Case c_deformada.png>
 Package pdftex.def Info: GRAFICOS/Case c_deformada.png  used on input line 131.
@@ -1070,12 +1070,12 @@ File: LOGO_UNIVERSIDAD.jpg Graphic file (type jpg)
 Package pdftex.def Info: LOGO_UNIVERSIDAD.jpg  used on input line 135.
 (pdftex.def)             Requested size: 110.8946pt x 40.20973pt.
 [9 <./GRAFICOS/Case a_von_mises.png> <./GRAFICOS/Case c_fuerzas.png>]
-<GRAFICOS/Case d_fuerzas.png, id=211, 499.3857pt x 162.1257pt>
+<GRAFICOS/Case d_fuerzas.png, id=214, 499.3857pt x 162.1257pt>
 File: GRAFICOS/Case d_fuerzas.png Graphic file (type png)
 <use GRAFICOS/Case d_fuerzas.png>
 Package pdftex.def Info: GRAFICOS/Case d_fuerzas.png  used on input line 170.
 (pdftex.def)             Requested size: 354.86412pt x 115.20653pt.
-<GRAFICOS/Case d_deformada.png, id=212, 499.8675pt x 182.1204pt>
+<GRAFICOS/Case d_deformada.png, id=215, 499.8675pt x 182.1204pt>
 File: GRAFICOS/Case d_deformada.png Graphic file (type png)
 <use GRAFICOS/Case d_deformada.png>
 Package pdftex.def Info: GRAFICOS/Case d_deformada.png  used on input line 177.
@@ -1087,7 +1087,7 @@ File: LOGO_UNIVERSIDAD.jpg Graphic file (type jpg)
 Package pdftex.def Info: LOGO_UNIVERSIDAD.jpg  used on input line 181.
 (pdftex.def)             Requested size: 110.8946pt x 40.20973pt.
 [10 <./GRAFICOS/Case c_deformada.png> <./GRAFICOS/Case d_fuerzas.png>]
-<GRAFICOS/Case d_von_mises.png, id=223, 498.9039pt x 142.8537pt>
+<GRAFICOS/Case d_von_mises.png, id=226, 498.9039pt x 142.8537pt>
 File: GRAFICOS/Case d_von_mises.png Graphic file (type png)
 <use GRAFICOS/Case d_von_mises.png>
 Package pdftex.def Info: GRAFICOS/Case d_von_mises.png  used on input line 214.
@@ -1102,17 +1102,17 @@ Package pdftex.def Info: LOGO_UNIVERSIDAD.jpg  used on input line 338.
 \openout2 = `preguntas.aux'.
 
  (preguntas.tex
-<GRAFICOS/Initial_nodes_por_grupo.png, id=235, 444.2196pt x 149.1171pt>
+<GRAFICOS/Initial_nodes_por_grupo.png, id=238, 444.2196pt x 149.1171pt>
 File: GRAFICOS/Initial_nodes_por_grupo.png Graphic file (type png)
 <use GRAFICOS/Initial_nodes_por_grupo.png>
 Package pdftex.def Info: GRAFICOS/Initial_nodes_por_grupo.png  used on input line 9.
 (pdftex.def)             Requested size: 221.78923pt x 74.45142pt.
-<GRAFICOS/Initial_elementos.png, id=236, 500.5902pt x 161.403pt>
+<GRAFICOS/Initial_elementos.png, id=239, 500.5902pt x 161.403pt>
 File: GRAFICOS/Initial_elementos.png Graphic file (type png)
 <use GRAFICOS/Initial_elementos.png>
 Package pdftex.def Info: GRAFICOS/Initial_elementos.png  used on input line 16.
 (pdftex.def)             Requested size: 221.78923pt x 71.51009pt.
-<GRAFICOS/convergencia.png, id=237, 462.528pt x 346.896pt>
+<GRAFICOS/convergencia.png, id=240, 462.528pt x 346.896pt>
 File: GRAFICOS/convergencia.png Graphic file (type png)
 <use GRAFICOS/convergencia.png>
 Package pdftex.def Info: GRAFICOS/convergencia.png  used on input line 25.
@@ -1128,12 +1128,12 @@ Package pdftex.def Info: LOGO_UNIVERSIDAD.jpg  used on input line 32.
 
 
  <./GRAFICOS/Initial_nodes_por_grupo.png> <./GRAFICOS/Initial_elementos.png> <./GRAFICOS/convergencia.png>]
-<GRAFICOS/Case a_nodes_por_grupo.png, id=250, 445.9059pt x 150.3216pt>
+<GRAFICOS/Case a_nodes_por_grupo.png, id=253, 445.9059pt x 150.3216pt>
 File: GRAFICOS/Case a_nodes_por_grupo.png Graphic file (type png)
 <use GRAFICOS/Case a_nodes_por_grupo.png>
 Package pdftex.def Info: GRAFICOS/Case a_nodes_por_grupo.png  used on input line 36.
 (pdftex.def)             Requested size: 221.78923pt x 74.77066pt.
-<GRAFICOS/Case a_elementos.png, id=251, 499.3857pt x 162.1257pt>
+<GRAFICOS/Case a_elementos.png, id=254, 499.3857pt x 162.1257pt>
 File: GRAFICOS/Case a_elementos.png Graphic file (type png)
 <use GRAFICOS/Case a_elementos.png>
 Package pdftex.def Info: GRAFICOS/Case a_elementos.png  used on input line 43.
@@ -1150,7 +1150,16 @@ File: LOGO_UNIVERSIDAD.jpg Graphic file (type jpg)
 <use LOGO_UNIVERSIDAD.jpg>
 Package pdftex.def Info: LOGO_UNIVERSIDAD.jpg  used on input line 339.
 (pdftex.def)             Requested size: 110.8946pt x 40.20973pt.
-[14] (c:/Users\felip\OneDrive\Escritorio\202510\Finite Elements\TAREA_2_FINITE\INFORMEbuild\Informe.aux
+[14] (c:/Users\felip\OneDrive\Escritorio\202510\Finite Elements\TAREA_2_FINITE\INFORMEbuild\Informe.bbl)
+
+File: LOGO_UNIVERSIDAD.jpg Graphic file (type jpg)
+<use LOGO_UNIVERSIDAD.jpg>
+Package pdftex.def Info: LOGO_UNIVERSIDAD.jpg  used on input line 343.
+(pdftex.def)             Requested size: 110.8946pt x 40.20973pt.
+[15
+
+
+] (c:/Users\felip\OneDrive\Escritorio\202510\Finite Elements\TAREA_2_FINITE\INFORMEbuild\Informe.aux
 LaTeX Info: Redefining \. on input line 15.
 LaTeX Info: Redefining \% on input line 15.
  (c:/Users\felip\OneDrive\Escritorio\202510\Finite Elements\TAREA_2_FINITE\INFORMEbuild\results.aux) (c:/Users\felip\OneDrive\Escritorio\202510\Finite Elements\TAREA_2_FINITE\INFORMEbuild\preguntas.aux))
@@ -1166,17 +1175,17 @@ Package rerunfilecheck Info: File `Informe.out' has not changed.
 (rerunfilecheck)             Checksum: EF23179AACDF7EF1CE9D2718F633EC9A;6611.
  ) 
 Here is how much of TeX's memory you used:
- 29300 strings out of 473899
- 544416 string characters out of 5726499
+ 29323 strings out of 473899
+ 544916 string characters out of 5726499
  1942960 words of memory out of 5000000
- 51427 multiletter control sequences out of 15000+600000
- 608262 words of font info for 196 fonts, out of 8000000 for 9000
+ 51441 multiletter control sequences out of 15000+600000
+ 608508 words of font info for 199 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,17n,87p,1219b,547s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/felip/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/felip/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/felip/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/felip/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/felip/AppData/Local/Programs/MiKTeX/fonts/type1/urw/symbol/usyr.pfb><C:/Users/felip/AppData/Local/Programs/MiKTeX/fonts/type1/urw/symbol/usyr.pfb><C:/Users/felip/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/felip/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/felip/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on "c:/Users\felip\OneDrive\Escritorio\202510\Finite Elements\TAREA_2_FINITE\INFORMEbuild\Informe.pdf" (15 pages, 3353872 bytes).
+Output written on "c:/Users\felip\OneDrive\Escritorio\202510\Finite Elements\TAREA_2_FINITE\INFORMEbuild\Informe.pdf" (16 pages, 3356992 bytes).
 PDF statistics:
- 324 PDF objects out of 1000 (max. 8388607)
- 73 named destinations out of 1000 (max. 500000)
+ 334 PDF objects out of 1000 (max. 8388607)
+ 75 named destinations out of 1000 (max. 500000)
  48941 words of extra memory for PDF output out of 51595 (max. 10000000)
 

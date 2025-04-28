@@ -1,5 +1,15 @@
 # Fdb version 4
-["pdflatex"] 1745811165.18045 "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORME/Informe.tex" "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe.pdf" "Informe" 1745811170.18901 0
+["bibtex c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe"] 1745813753.38867 "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe.aux" "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe.bbl" "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe" 1745813840.5655 0
+  "./ref.bib" 1745813200 382 0d61a0b9f9de77be8f1a5376076047f3 ""
+  "C:/Users/felip/AppData/Local/Programs/MiKTeX/bibtex/bst/natbib/unsrtnat.bst" 1284455456 24550 a41a6405f4de768c43e871d9fbce2bc8 ""
+  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe.aux" 1745813839 2595 d49b973b1cb85846c77701d1d574c499 "pdflatex"
+  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/preguntas.aux" 1745813839 2944 43efb4acf54f0ed651d4d44bd72631fa "pdflatex"
+  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/results.aux" 1745813838 6120 d4e0c1df63edb3b3d18c19644afc0ceb "pdflatex"
+  (generated)
+  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe.bbl"
+  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe.blg"
+  (rewritten before read)
+["pdflatex"] 1745813835.2032 "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORME/Informe.tex" "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe.pdf" "Informe" 1745813840.56716 0
   "C:/Users/felip/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1731791225 82507 a9eef8696c92627b87e9975edea03b2a ""
   "C:/Users/felip/AppData/Local/MiKTeX/fonts/tfm/public/rsfs/rsfs10.tfm" 1725135574 688 37338d6ab346c2f1466b29e195316aa4 ""
   "C:/Users/felip/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1731791239 24265334 e5b26b3f8e9b98ca0264e80bc6c5ba90 ""
@@ -211,16 +221,17 @@
   "GRAFICOS/Initial_elementos.png" 1745470424 193267 d9c99122f475c55ef46c5e84ab75f470 ""
   "GRAFICOS/Initial_nodes_por_grupo.png" 1745470424 58037 a0b7bd19fe14f2258461e35249bcfb44 ""
   "GRAFICOS/convergencia.png" 1745525186 153796 a8efce89385e4519df5f9a3818977081 ""
-  "Informe.tex" 1745811119 16472 4f5dfb0db902ff64a38ea4c31c0fc041 ""
+  "Informe.tex" 1745813259 16500 cec1a8f77167b1bee97c4fa1dce816b2 ""
   "LOGO_UNIVERSIDAD.jpg" 1745470424 209820 2134e729a4493a99d3d34c719af1eecf ""
-  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORME/Informe.tex" 1745811119 16472 4f5dfb0db902ff64a38ea4c31c0fc041 ""
-  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe.aux" 1745811169 2482 d4c2149d49cce657004faaf9f71af1bf "pdflatex"
-  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe.out" 1745811169 6611 ef23179aacdf7ef1ce9d2718f633ec9a "pdflatex"
-  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/preguntas.aux" 1745811169 2923 db24f03e3bf51389648794cd5feff348 "pdflatex"
-  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/results.aux" 1745811169 6120 d4e0c1df63edb3b3d18c19644afc0ceb "pdflatex"
+  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORME/Informe.tex" 1745813259 16500 cec1a8f77167b1bee97c4fa1dce816b2 ""
+  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe.aux" 1745813839 2595 d49b973b1cb85846c77701d1d574c499 "pdflatex"
+  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe.bbl" 1745813753 663 09e919803a93b400bdc43b1e5625e98d "bibtex c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe"
+  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe.out" 1745813839 6611 ef23179aacdf7ef1ce9d2718f633ec9a "pdflatex"
+  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/preguntas.aux" 1745813839 2944 43efb4acf54f0ed651d4d44bd72631fa "pdflatex"
+  "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/results.aux" 1745813838 6120 d4e0c1df63edb3b3d18c19644afc0ceb "pdflatex"
   "img/wrench.png" 1745811119 333740 4123ff9160d285e4cd9a8a749a1d1ca9 ""
-  "preguntas.tex" 1745717216 4266 e3ff09a027333720db238d6af6972960 ""
-  "results.tex" 1745811119 8696 4cc90234fef225efc9617bd845b3af04 ""
+  "preguntas.tex" 1745813746 4272 a50751c4831a5703766c2c2a49f65b96 ""
+  "results.tex" 1745813834 8696 4cc90234fef225efc9617bd845b3af04 ""
   (generated)
   "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe.aux"
   "c:/Users/felip/OneDrive/Escritorio/202510/Finite Elements/TAREA_2_FINITE/INFORMEbuild/Informe.log"
