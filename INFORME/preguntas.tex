@@ -1,53 +1,56 @@
 \section{Preguntas}
 
-\subsection{How do you know convergence in mesh size has been achieved?}
+\subsection{How is mesh size convergence determined?}
 
-Mesh size convergence is achieved when the solution of the problem does not change significantly with a further refinement of the mesh. This can be checked by comparing the results of the displacements, Von Mises stresses and principal stresses compared to other mesh sizes. In this case, convergence was assessed by plotting the maximum Von misses Stress with the characteristic lenght, and observing the time of processing in each case. The result shows that at an $L_c$ of 0.8, the mesh was already converging.
+Mesh size convergence is achieved when further refinement of the mesh does not significantly alter the solution of the problem.  
+This can be verified by comparing results such as displacements, Von Mises stresses, and principal stresses across different mesh sizes.  
+In this case, convergence was assessed by plotting the maximum Von Mises stress against the characteristic length, while also observing the processing time for each mesh.  
+The results show that at a characteristic length $L_c = 0.8$, the mesh had already reached convergence.
 
 \begin{figure}[H]
-\centering
-\includegraphics[width=0.5\textwidth]{GRAFICOS/Initial_nodes_por_grupo.png}
-\caption{Caption}
-\label{fig:wrench}
+    \centering
+    \includegraphics[width=0.8\textwidth]{GRAFICOS/Initial_nodes_por_grupo.png}
+    \caption{Initial nodal distribution for the coarse mesh.}
+    \label{fig:initial_nodes}
 \end{figure}
   
 \begin{figure}[H]
-\centering
-\includegraphics[width=0.5\textwidth]{GRAFICOS/Initial_elementos.png}
-\caption{Caption}
-\label{fig:deformed_shape}
+    \centering
+    \includegraphics[width=0.8\textwidth]{GRAFICOS/Initial_elementos.png}
+    \caption{Initial element distribution for the coarse mesh.}
+    \label{fig:initial_elements}
 \end{figure}
   
-Then, a code was programmed to plot the convergence of the mesh depending on the time of ejecution.
-  
+A script was developed to plot the convergence behavior of the mesh based on the execution time.
+
 \begin{figure}[H]
-\centering
-\includegraphics[width=0.6\textwidth]{GRAFICOS/convergencia.png}
-\caption{Caption}
-\label{fig:wrench}
+    \centering
+    \includegraphics[width=0.6\textwidth]{GRAFICOS/convergence.png}
+    \caption{Convergence curve: maximum Von Mises stress and execution time versus characteristic length.}
+    \label{fig:convergence_curve}
 \end{figure}
 
-The result was an $L_c = 0.8$, balancing the time of computation and the precision of the model.
+The result confirmed that $L_c = 0.8$ provides a good balance between computational cost and solution accuracy.
 
-Therefore, the final model is plotted as follows:
-  
+Therefore, the final model after mesh convergence is illustrated below:
+
 \begin{figure}[H]
-\centering
-\includegraphics[width=0.5\textwidth]{GRAFICOS/Case a_nodes_por_grupo.png}
-\caption{Caption}
-\label{fig:wrench}
+    \centering
+    \includegraphics[width=0.8\textwidth]{GRAFICOS/Case a_nodes_por_grupo.png}
+    \caption{Final nodal distribution after mesh convergence.}
+    \label{fig:final_nodes}
 \end{figure}
   
 \begin{figure}[H]
-\centering
-\includegraphics[width=0.5\textwidth]{GRAFICOS/Case a_elementos.png}
-\caption{Caption}
-\label{fig:deformed_shape}
+    \centering
+    \includegraphics[width=0.8\textwidth]{GRAFICOS/Case a_elementos.png}
+    \caption{Final element distribution after mesh convergence.}
+    \label{fig:final_elements}
 \end{figure}
 
 \subsection{How do the stress/strain fields look like before and after smoothing?}
 
-Before smoothing, the stress and strain fields shows abrubt jumps between adjacent elements, producing a non-physical behaviour and dicontinuous fields. It is expected due to the implementation of CST elements, which have a constant stress and strain state. After applying post-processing smoothing, the fields becmoe continuous, whit better transitions across the domain, making it physically accurate.
+Before smoothing, the stress and strain fields shows abrubt jumps between adjacent elements (as sees in apendices section), producing a non-physical behaviour and dicontinuous fields. It is expected due to the implementation of CST elements, which have a constant stress and strain state. After applying post-processing smoothing, the fields becmoe continuous, whit better transitions across the domain, making it physically accurate.
 
 \subsection{What differences do you observe when applying the load as a distributed load versus a point load?}
 
@@ -68,9 +71,33 @@ Therefore, a reasonable stress-based failure criteria for PLA under mechanical l
 
 As a result, based on the FEM simulations and stress distribution results, the highest Von Mises stresses concentrated at the junction between the wrench handle and the wrench head would be an expected failure location, in other words, near sharp geometrical transitions or areas under bending moments.
 
+\subsection{Topological Optimization}
 
+In order to reduce peak stress concentrations, a topological optimization was implemented based on the von Mises stress field. Elements with higher von Mises stress values had their thickness increased, while elements with lower von Mises stress values had their thickness reduced.  
+To maintain the overall weight of the structure, several iterations were performed until the final model was obtained.  
+The results are shown in the following figures:
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{GRAFICOS/Topo_ini_von_mises.png}
+    \caption{Von Mises stress distribution before optimization.}
+    \label{fig:von_mises_initial}
+\end{figure}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{GRAFICOS/espesores_espesores.png}
+    \caption{Final thickness distribution after optimization.}
+    \label{fig:thickness_distribution}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{GRAFICOS/Topo_von_mises.png}
+    \caption{Von Mises stress distribution after optimization.}
+    \label{fig:von_mises_optimized}
+\end{figure}
+The optimization process resulted in a more uniform stress distribution, reducing peak stresses and improving the overall performance of the wrench. The final design is expected to be more efficient and durable under mechanical loading conditions.
 
 
 

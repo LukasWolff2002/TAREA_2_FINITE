@@ -120,18 +120,20 @@ Now, a similar case to the first one was analyzed, but this time the self-weight
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{GRAFICOS/Case c_fuerzas.png}
-    \caption{Caption}
+    \caption{Applied self-weight forces acting on each CST element's centroid.}
     \label{fig:xdiwi}
 \end{figure}
 
-We can observe in Figure \ref{fig:xdiwi} that the vector of the self-weight is acting through the entire body of the wrench, more specifically, in the mass centroid of each CST element. The deformed state is shown in Figure \ref{fig:xdiwi2}.
+We can observe in Figure \ref{fig:xdiwi} that the self-weight vector acts across the entire body of the wrench, specifically at the mass centroid of each CST element.  
+The deformed state of the structure is shown in Figure \ref{fig:xdiwi2}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{GRAFICOS/Case c_deformada.png}
-    \caption{Caption}
+    \caption{Deformed configuration of the wrench under self-weight loading.}
     \label{fig:xdiwi2}
 \end{figure}
+
 
 \begin{table}[H]
     \centering
@@ -207,14 +209,16 @@ Notice the amplification factor of the deformed state, which is $10^3$. Which is
     \label{tab:tabla2}
 \end{table}
 
-Observing the plot of the Von Misses stresses, we can see that the maximum value is $\sigma_{VM} = 0.0525 Pa$. This is a clear indication of the low impact of the self-weight on the wrench.
+Observing the plot of the Von Mises stresses, we can see that the maximum value is $\sigma_{VM} = 0.0525\ \text{Pa}$.  
+This clearly indicates the low impact of the self-weight on the wrench structure.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{GRAFICOS/Case d_von_mises.png}
-    \caption{Caption}
+    \caption{Von Mises stress distribution under self-weight loading.}
     \label{fig:principal}
 \end{figure}
+
 
 Finally, the simulation shows the clear mechanical behavior of the PLA wrench under different loading conditions. Where the CST model was able to capture accuratly and with precision the internal stresses and strains of the element. The results were coherent with the physical behavior of it, and the Von Misses stress was able to capture the stress concentration in the areas of interest. The results were also consistent with the expected behavior of a wrench under different loading conditions.
 

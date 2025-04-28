@@ -271,7 +271,7 @@ def compute_nodal_stress_strain(nodes, elements, u_global):
 def main(title, self_weight=False, point_force=False, distribuited_force = False, def_scale=1, force_scale=1e-2, reaction_scale=1e-2):
     input_file = "ENTREGA_6/llave.geo"
     output_file = "ENTREGA_6/malla.msh"
-    lc = 0.8
+    lc = 10
 
     q = 294 #N
 
@@ -338,14 +338,17 @@ def main(title, self_weight=False, point_force=False, distribuited_force = False
     plot_principal_fields(estructure.nodes, estructure.elements, estructure.u_global, title_prefix=title)
 
 if __name__ == "__main__":
-    title = 'Case a'
-    main(title, self_weight=False, point_force=True, distribuited_force = False, def_scale = 0.1, force_scale=0.05, reaction_scale = 1.5e-2)
-    title = 'Case b'
-    main(title, self_weight=False, point_force=False, distribuited_force = True, def_scale = 0.1, force_scale=0.2, reaction_scale = 1.5e-2)
-    title = 'Case c'
-    main(title, self_weight=True,  point_force=False, distribuited_force = True, def_scale = 0.1, force_scale=0.2, reaction_scale = 1.5e-2)
-    title = 'Case d'
+    #title = 'Case a'
+    #main(title, self_weight=False, point_force=True, distribuited_force = False, def_scale = 0.1, force_scale=0.05, reaction_scale = 1.5e-2)
+    #title = 'Case b'
+    #main(title, self_weight=False, point_force=False, distribuited_force = True, def_scale = 0.1, force_scale=0.2, reaction_scale = 1.5e-2)
+    #title = 'Case c'
+    #main(title, self_weight=True,  point_force=False, distribuited_force = True, def_scale = 0.1, force_scale=0.2, reaction_scale = 1.5e-2)
+    #title = 'Case d'
+    #main(title, self_weight=True,  point_force=False, distribuited_force = False, def_scale = 1000, force_scale=10000, reaction_scale = 100)
+
+    title = 'Test'
     main(title, self_weight=True,  point_force=False, distribuited_force = False, def_scale = 1000, force_scale=10000, reaction_scale = 100)
 
-    #itle = 'Test'
-    #main(title, self_weight=True,  point_force=False, distribuited_force = False, def_scale = 1000, force_scale=10000, reaction_scale = 100)
+    title = 'Initial'
+    main(title, self_weight=True,  point_force=False, distribuited_force = False, def_scale = 1000, force_scale=10000, reaction_scale = 100)

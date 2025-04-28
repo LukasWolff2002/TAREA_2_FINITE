@@ -87,7 +87,7 @@ class Node:
         ax.set_aspect('equal', adjustable='box')
         ax.set_xlabel("x")
         ax.set_ylabel("y")
-        ax.set_title("Nodos por grupo físico")
+        ax.set_title("Nodes per Group")
         ax.grid(True)
         #ax.legend()
 
