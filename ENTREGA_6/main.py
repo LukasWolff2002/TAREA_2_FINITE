@@ -16,7 +16,7 @@ from section import Section
 from cst import CST
 from solve import Solve
 
-from graph import plot_all_elements, plot_applied_forces, plot_deformed_structure, plot_deformed_with_reactions, plot_von_mises_field, plot_all_scalar_fields_separately, plot_principal_fields
+from graph import plot_all_elements, plot_applied_forces, plot_deformed_structure, plot_deformed_with_reactions, plot_von_mises_field, plot_all_scalar_fields_separately, plot_principal_fields,plot_von_mises_per_element
 
 # ==============================
 # Función para generar la malla
@@ -271,7 +271,7 @@ def compute_nodal_stress_strain(nodes, elements, u_global):
 def main(title, self_weight=False, point_force=False, distribuited_force = False, def_scale=1, force_scale=1e-2, reaction_scale=1e-2):
     input_file = "ENTREGA_6/llave.geo"
     output_file = "ENTREGA_6/malla.msh"
-    lc = 10
+    lc = 0.8
 
     q = 294 #N
 
@@ -330,6 +330,7 @@ def main(title, self_weight=False, point_force=False, distribuited_force = False
 
     vm_nodal = compute_nodal_von_mises(estructure.elements, estructure.u_global)
     plot_von_mises_field(estructure.nodes, estructure.elements, vm_nodal, title)
+    plot_von_mises_per_element(estructure.nodes, estructure.elements, vm_nodal, title)
     
     nodal_fields = compute_nodal_stress_strain(estructure.nodes, estructure.elements, estructure.u_global)   
     
@@ -337,14 +338,14 @@ def main(title, self_weight=False, point_force=False, distribuited_force = False
     plot_principal_fields(estructure.nodes, estructure.elements, estructure.u_global, title_prefix=title)
 
 if __name__ == "__main__":
-    #title = 'Case a'
-    #main(title, self_weight=False, point_force=True, distribuited_force = False, def_scale = 0.1, force_scale=0.05, reaction_scale = 1.5e-2)
-    #title = 'Case b'
-    #main(title, self_weight=False, point_force=False, distribuited_force = True, def_scale = 0.1, force_scale=0.2, reaction_scale = 1.5e-2)
-    #title = 'Case c'
-    #main(title, self_weight=True,  point_force=False, distribuited_force = True, def_scale = 0.1, force_scale=0.2, reaction_scale = 1.5e-2)
-    #title = 'Case d'
-    #main(title, self_weight=True,  point_force=False, distribuited_force = False, def_scale = 1000, force_scale=10000, reaction_scale = 100)
-
-    title = 'Test'
+    title = 'Case a'
+    main(title, self_weight=False, point_force=True, distribuited_force = False, def_scale = 0.1, force_scale=0.05, reaction_scale = 1.5e-2)
+    title = 'Case b'
+    main(title, self_weight=False, point_force=False, distribuited_force = True, def_scale = 0.1, force_scale=0.2, reaction_scale = 1.5e-2)
+    title = 'Case c'
+    main(title, self_weight=True,  point_force=False, distribuited_force = True, def_scale = 0.1, force_scale=0.2, reaction_scale = 1.5e-2)
+    title = 'Case d'
     main(title, self_weight=True,  point_force=False, distribuited_force = False, def_scale = 1000, force_scale=10000, reaction_scale = 100)
+
+    #itle = 'Test'
+    #main(title, self_weight=True,  point_force=False, distribuited_force = False, def_scale = 1000, force_scale=10000, reaction_scale = 100)

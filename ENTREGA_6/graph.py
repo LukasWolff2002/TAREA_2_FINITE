@@ -54,7 +54,8 @@ def plot_all_elements(elements, title, show_ids=True):
 
     ax.set_xlabel("x")
     ax.set_ylabel("y")
-    ax.set_title("Todos los elementos CST")
+    ax.set_title("All CST elements")
+
     ax.grid(True)
 
     # Guardar imagen recortando al contenido real
@@ -92,7 +93,8 @@ def plot_applied_forces(nodes, elements, title, f_vector, scale=1e-2):
     height = fixed_width * aspect_ratio
 
     fig, ax = plt.subplots(figsize=(fixed_width, height))
-    ax.set_title("Fuerzas aplicadas sobre los nodos")
+    ax.set_title("Forces applied on nodes")
+
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.set_xlim(x_min - x_margin, x_max + x_margin)
@@ -185,7 +187,8 @@ def plot_deformed_structure(elements, title, scale=1.0, show_ids=False):
     ax.set_ylim(y_min - y_margin, y_max + y_margin)
     ax.set_aspect('equal', adjustable='box')
 
-    ax.set_title(f"Estructura deformada (amplificación ×{scale})")
+    ax.set_title(f"Deformed structure (amplification ×{scale})")
+
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.grid(True)
@@ -233,7 +236,8 @@ def plot_deformed_with_reactions(title, elements, reactions, scale=1.0, reaction
             if show_ids:
                 ax1.text(nodo.x, nodo.y, f'N{nodo.id}', fontsize=6)
 
-    ax1.set_title(f"Reacciones nodales", fontsize=14)
+    ax1.set_title(f"Nodal reactions", fontsize=14)
+
     ax1.set_xlabel("x")
     ax1.set_ylabel("y")
     ax1.grid(True)
@@ -275,9 +279,11 @@ def plot_deformed_with_reactions(title, elements, reactions, scale=1.0, reaction
     if values:
         tpc = ax2.tripcolor(triang, facecolors=values, edgecolors='k', cmap='plasma', zorder=2)
         cbar = fig.colorbar(tpc, ax=ax2)
-        cbar.set_label("Reaccion Force [N]", fontsize=14)
+        cbar.set_label("Reaction force [N]", fontsize=14)
 
-    ax2.set_title("Mapa de calor de reacciones por elemento", fontsize=14)
+
+    ax2.set_title("Heatmap of reactions per element", fontsize=14)
+
     ax2.set_xlabel("x")
     ax2.set_ylabel("y")
     ax2.grid(True)
@@ -323,12 +329,12 @@ def plot_von_mises_field(nodes, elements, vm_nodal_dict, title, cmap='plasma'):
     tcf = ax.tricontourf(triang, vms, levels=20, cmap=cmap)
     #ax.triplot(triang, color='gray', linewidth=0.5)
     cbar = fig.colorbar(tcf, ax=ax)
-    cbar.set_label("Tensión de Von Mises (Pa)")
+    cbar.set_label("Von Mises Stress (Pa)")
 
     ax.set_xlim(x_min - x_margin, x_max + x_margin)
     ax.set_ylim(y_min - y_margin, y_max + y_margin)
     ax.set_aspect('equal', adjustable='box')
-    ax.set_title("Campo de Von Mises sobre los elementos")
+    ax.set_title("Von Mises stress field over elements")
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.grid(True)
@@ -336,6 +342,91 @@ def plot_von_mises_field(nodes, elements, vm_nodal_dict, title, cmap='plasma'):
     # Guardar imagen recortada y centrada
     fig.savefig(f"INFORME/GRAFICOS/{title}_von_mises.png", dpi=300, bbox_inches='tight')
     plt.close()
+
+from matplotlib.colors import BoundaryNorm
+
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.tri as mtri
+from matplotlib.colors import LogNorm
+
+def plot_von_mises_per_element(nodes, elements, vm_nodal_dict, title, cmap='plasma'):
+    node_id_to_index = {}
+    xs, ys = [], []
+
+    for i, node in enumerate(nodes):
+        node_id_to_index[node.id] = i
+        xs.append(node.x)
+        ys.append(node.y)
+
+    triangles = []
+    element_colors = []
+
+    for elem in elements:
+        triangle = [node_id_to_index[n.id] for n in elem.node_list]
+        triangles.append(triangle)
+
+        # Usar promedio de los nodos para el valor del elemento
+        vms_elem = np.mean([vm_nodal_dict.get(n.id, 0.0) for n in elem.node_list])
+
+        # ⚡ Si el valor es 0 o negativo, reemplazar por pequeño valor positivo
+        if vms_elem <= 0:
+            vms_elem = 1e-6
+
+        element_colors.append(vms_elem)
+
+    triang = mtri.Triangulation(xs, ys, triangles)
+
+    # --- Escalado proporcional ---
+    x_min, x_max = min(xs), max(xs)
+    y_min, y_max = min(ys), max(ys)
+    x_margin = (x_max - x_min) * 0.05
+    y_margin = (y_max - y_min) * 0.05
+
+    x_range = (x_max - x_min) + 2 * x_margin
+    y_range = (y_max - y_min) + 2 * y_margin
+
+    fixed_width = 8
+    aspect_ratio = y_range / x_range
+    height = fixed_width * aspect_ratio
+
+    fig, ax = plt.subplots(figsize=(fixed_width, height))
+
+    # --- Escala logarítmica ---
+    vmin = min(element_colors)
+    vmax = max(element_colors)
+
+    if vmin <= 0:
+        vmin = min([v for v in element_colors if v > 0], default=1e-6)
+
+    norm = LogNorm(vmin=vmin, vmax=vmax)
+
+    # 🎯 Graficar con shading='flat'
+    tpc = ax.tripcolor(
+        triang,
+        facecolors=element_colors,
+        cmap=cmap,
+        norm=norm,
+        edgecolors='k',
+        shading='flat'
+    )
+
+    cbar = fig.colorbar(tpc, ax=ax)
+    cbar.set_label("Von Mises Stress (Pa)")
+
+    ax.set_xlim(x_min - x_margin, x_max + x_margin)
+    ax.set_ylim(y_min - y_margin, y_max + y_margin)
+    ax.set_aspect('equal', adjustable='box')
+    ax.set_title("Von Mises stress per element")
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.grid(True)
+
+    os.makedirs("INFORME/GRAFICOS", exist_ok=True)
+    fig.savefig(f"INFORME/GRAFICOS/{title}_von_mises_per_element.png", dpi=300, bbox_inches='tight')
+    plt.close()
+
 
 def compute_nodal_principal_fields(nodes, elements, u_global):
     """
@@ -399,6 +490,13 @@ def plot_all_scalar_fields_separately(nodes, elements, nodal_fields, title_prefi
     plot_scalar_field(nodes, elements, εyy, r"$\varepsilon_{yy}$", f"{title_prefix} - epsilon_yy")
     plot_scalar_field(nodes, elements, γxy, r"$\gamma_{xy}$", f"{title_prefix} - gamma_xy")
 
+    plot_scalar_field_per_element(nodes, elements, σxx, r"$\sigma_{xx}$ (Pa)", f"{title_prefix} - sigma_xx_per_element")
+    plot_scalar_field_per_element(nodes, elements, σyy, r"$\sigma_{yy}$ (Pa)", f"{title_prefix} - sigma_yy_per_element")
+    plot_scalar_field_per_element(nodes, elements, τxy, r"$\tau_{xy}$ (Pa)", f"{title_prefix} - tau_xy_per_element")
+    plot_scalar_field_per_element(nodes, elements, εxx, r"$\varepsilon_{xx}$", f"{title_prefix} - epsilon_xx_per_element")
+    plot_scalar_field_per_element(nodes, elements, εyy, r"$\varepsilon_{yy}$", f"{title_prefix} - epsilon_yy_per_element")
+    plot_scalar_field_per_element(nodes, elements, γxy, r"$\gamma_{xy}$", f"{title_prefix} - gamma_xy_per_element")
+
 def plot_scalar_field(nodes, elements, nodal_values, field_title, filename_prefix, cmap='plasma'):
     """
     Grafica un campo escalar interpolado sobre la malla de elementos.
@@ -452,6 +550,78 @@ def plot_scalar_field(nodes, elements, nodal_values, field_title, filename_prefi
     fig.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()
 
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.tri as mtri
+from matplotlib.colors import LogNorm
+from matplotlib.colors import Normalize
+
+def plot_scalar_field_per_element(nodes, elements, nodal_values, field_title, filename_prefix, cmap='plasma'):
+    node_id_to_index = {node.id: i for i, node in enumerate(nodes)}
+    xs = [node.x for node in nodes]
+    ys = [node.y for node in nodes]
+
+    triangles = []
+    element_values = []
+
+    for elem in elements:
+        triangle = [node_id_to_index[n.id] for n in elem.node_list]
+        triangles.append(triangle)
+
+        # Valor promedio del elemento
+        value = np.mean([nodal_values[n.id] for n in elem.node_list])
+
+        # ⚡ Si el valor es 0 o negativo, lo reemplazamos por un pequeño valor positivo
+        if value <= 0:
+            value = 1e-6
+
+        element_values.append(value)
+
+    triang = mtri.Triangulation(xs, ys, triangles)
+
+    x_min, x_max = min(xs), max(xs)
+    y_min, y_max = min(ys), max(ys)
+    x_margin = (x_max - x_min) * 0.05
+    y_margin = (y_max - y_min) * 0.05
+
+    fixed_width = 8
+    aspect_ratio = ((y_max - y_min) + 2 * y_margin) / ((x_max - x_min) + 2 * x_margin)
+    height = fixed_width * aspect_ratio
+
+    fig, ax = plt.subplots(figsize=(fixed_width, height))
+
+    vmin = min(element_values)
+    vmax = max(element_values)
+
+    norm = LogNorm(vmin=vmin, vmax=vmax)
+
+    tpc = ax.tripcolor(
+        triang,
+        facecolors=element_values,
+        cmap=cmap,
+        norm=norm,
+        edgecolors='k',
+        shading='flat'
+    )
+
+    cbar = fig.colorbar(tpc, ax=ax)
+    cbar.set_label(field_title)
+
+    ax.set_xlim(x_min - x_margin, x_max + x_margin)
+    ax.set_ylim(y_min - y_margin, y_max + y_margin)
+    ax.set_aspect('equal', adjustable='box')
+    ax.set_title(field_title)
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.grid(True)
+
+    os.makedirs("INFORME/GRAFICOS", exist_ok=True)
+    filename = f"INFORME/GRAFICOS/{clean_filename(filename_prefix)}.png"
+    fig.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close()
+
+
 def plot_principal_fields(nodes, elements, u_global, title_prefix):
         """
         Genera 4 gráficos: σ1, σ2, ε1, ε2.
@@ -462,6 +632,11 @@ def plot_principal_fields(nodes, elements, u_global, title_prefix):
         plot_scalar_field(nodes, elements, sigma2, r"$\sigma_2$ (Pa)", f"{title_prefix} - sigma_2")
         plot_scalar_field(nodes, elements, eps1, r"$\varepsilon_1$", f"{title_prefix} - epsilon_1")
         plot_scalar_field(nodes, elements, eps2, r"$\varepsilon_2$", f"{title_prefix} - epsilon_2")
+
+        plot_scalar_field_per_element(nodes, elements, sigma1, r"$\sigma_1$ (Pa)", f"{title_prefix} - sigma_1_per_element")
+        plot_scalar_field_per_element(nodes, elements, sigma2, r"$\sigma_2$ (Pa)", f"{title_prefix} - sigma_2_per_element")
+        plot_scalar_field_per_element(nodes, elements, eps1, r"$\varepsilon_1$", f"{title_prefix} - epsilon_1_per_element")
+        plot_scalar_field_per_element(nodes, elements, eps2, r"$\varepsilon_2$", f"{title_prefix} - epsilon_2_per_element")
 
 import matplotlib.tri as mtri
 import matplotlib.pyplot as plt
@@ -507,8 +682,8 @@ def plot_elements_by_thickness(elements, title="espesores", cmap='viridis'):
 
     fig, ax = plt.subplots(figsize=(fixed_width, height))
     tpc = ax.tripcolor(triang, facecolors=thicknesses, edgecolors='k', cmap=cmap)
-    cbar = plt.colorbar(tpc, ax=ax, label="Espesor (mm)")
-    ax.set_title("Distribución de Espesores por Elemento")
+    cbar = plt.colorbar(tpc, ax=ax, label="Thickness (mm)")
+    ax.set_title("Thickness Distribution per Element")
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.set_xlim(x_min - x_margin, x_max + x_margin)

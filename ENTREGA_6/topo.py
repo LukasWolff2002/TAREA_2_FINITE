@@ -606,13 +606,6 @@ def optimize_topology_iterative_n_extremes(P, grupos, elements, nodes, rho, estr
 
     return estructure
 
-
-
-
-
-
-
-
 # ===============
 # Función principal
 # ===============
